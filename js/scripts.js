@@ -168,16 +168,16 @@ function MapScene(){
 		render: function(canvas){
 			var ctx = canvas.getContext("2d");
 			imageCacher.ifloaded('images/background.jpg', function(image){
-				var ratio = 0.08;
-				var width = Math.floor(image.width * (canvas.height / image.height));
-				var dx = -Math.floor(playerX * ratio) % width;
+				var ratio = 0.1;
+				var width = image.width * (canvas.height / image.height);
+				var dx = -(playerX * ratio) % width;
 				while(dx < canvas.width){
 					ctx.drawImage(image, dx, 0, width, canvas.height);	
 					dx += width;
 				}
 			});
 			imageCacher.ifloaded('images/ground.png', function(image){
-				var width = Math.floor(image.width * (canvas.height / image.height));
+				var width = image.width * (canvas.height / image.height);
 				var dx = -playerX % width;
 				while(dx < canvas.width){
 					ctx.drawImage(image, dx, 0, width, canvas.height);	
