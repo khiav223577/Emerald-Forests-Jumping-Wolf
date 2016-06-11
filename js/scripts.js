@@ -150,6 +150,9 @@ function MenuScene(){
 		},
 		render: function(canvas){
 			var ctx = canvas.getContext("2d");
+			imageCacher.ifloaded('images/menu.jpg', function(image){
+				ctx.drawImage(image, 0, 0, canvas.width, canvas.height);	
+			});
 		}
 	};
 }
@@ -160,20 +163,22 @@ function MapScene(){
 	var playerX = 0;
 	return {
 		update: function(deltaRatio){
+			playerX += 8; //keep running
 		},
 		render: function(canvas){
 			var ctx = canvas.getContext("2d");
 			imageCacher.ifloaded('images/background.jpg', function(image){
-				var width = image.width * (canvas.height / image.height);
-				var dx = 0;
+				var ratio = 0.08;
+				var width = Math.floor(image.width * (canvas.height / image.height));
+				var dx = -Math.floor(playerX * ratio) % width;
 				while(dx < canvas.width){
 					ctx.drawImage(image, dx, 0, width, canvas.height);	
 					dx += width;
 				}
 			});
 			imageCacher.ifloaded('images/ground.png', function(image){
-				var width = image.width * (canvas.height / image.height);
-				var dx = 0;
+				var width = Math.floor(image.width * (canvas.height / image.height));
+				var dx = -playerX % width;
 				while(dx < canvas.width){
 					ctx.drawImage(image, dx, 0, width, canvas.height);	
 					dx += width;
