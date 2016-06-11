@@ -164,11 +164,19 @@ function MapScene(){
 			var ctx = canvas.getContext("2d");
 			imageCacher.ifloaded('images/background.jpg', function(image){
 				var width = image.width * (canvas.height / image.height);
-				ctx.drawImage(image, 0, 0, width, canvas.height);
+				var dx = 0;
+				while(dx < canvas.width){
+					ctx.drawImage(image, dx, 0, width, canvas.height);	
+					dx += width;
+				}
 			});
 			imageCacher.ifloaded('images/ground.png', function(image){
 				var width = image.width * (canvas.height / image.height);
-				ctx.drawImage(image, 0, 0, width, canvas.height);
+				var dx = 0;
+				while(dx < canvas.width){
+					ctx.drawImage(image, dx, 0, width, canvas.height);	
+					dx += width;
+				}
 			});
 		}
 	};
