@@ -43,6 +43,7 @@ function MenuScene(){
 //  MapScene
 //-------------------------------------
 function MapScene(){
+  var VIEWPORT_X = 90;
   var BASE_Y = 80;
   var player = (function(){
     var vx = 0, vy = 0;
@@ -68,7 +69,7 @@ function MapScene(){
     update: function(deltaRatio){
       if (player.x > nextEnemyRespawnAt){ 
         if (enemy) enemy.destroy();
-        enemy = characterFoctory.create('images/characters/enemy.png', player.x + 1000, 80);
+        enemy = characterFoctory.create('images/characters/enemy.png', player.x + 1000, BASE_Y);
         nextEnemyRespawnAt = player.x + 1100 + Math.rand(200);
       }
       _.each(characterFoctory.characters, function(character){
@@ -77,7 +78,7 @@ function MapScene(){
     },
     render: function(canvas){
       var ctx = canvas.getContext("2d");
-      var viewX = player.x - 80;
+      var viewX = player.x - VIEWPORT_X;
       function drawImageWithXRepeat(ratio, path){
         imageCacher.ifloaded(path, function(image){
           var width = image.width * (canvas.height / image.height);
