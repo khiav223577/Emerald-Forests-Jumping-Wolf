@@ -62,12 +62,14 @@ function MapScene(){
       }
     });
   })();
+  var nextEnemyRespawnAt = 50;
   var enemy;
   return {
     update: function(deltaRatio){
-      if (player.x % 1200 == 50){ 
+      if (player.x > nextEnemyRespawnAt){ 
         if (enemy) enemy.destroy();
         enemy = characterFoctory.create('images/characters/enemy.png', player.x + 1000, 80);
+        nextEnemyRespawnAt = player.x + 1100 + Math.rand(200);
       }
       _.each(characterFoctory.characters, function(character){
         character.update();

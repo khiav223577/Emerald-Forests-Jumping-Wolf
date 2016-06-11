@@ -1,3 +1,6 @@
+Math.rand = function(value){
+  return Math.floor(Math.random() * value);
+};
 var imageCacher = new function(){
   var onLoadCache = {}, imageCache = {};
   var thisObj;
