@@ -25,7 +25,7 @@ var imageCacher = new function(){
     onload: function(url, callback){
       if (url == undefined) return; //missing assets
       if (url.getKey){ //sprite
-      	alert('not support');
+        alert('not support');
         //loadSprite(url, callback);
       }else{
         loadImage(url, callback);
@@ -64,56 +64,56 @@ window.requestAnimFrame = function(){
 //  main
 //-------------------------------------
 var Input = new function(){
-	var statuses = {}, counter = {};
-	function getCount(key){
-		var count = counter[key];
-		return (count == undefined ? 0 : count);
-	}
-	return {
-		KEYS: {
-			ENTER: 13,
-			SPACE: 32
-		},
-		onKeyPressed: function(key){
-			statuses[key] = true;
-		},
-		update: function(){
-			_.each(Input.KEYS, function(key){
-				if (statuses[key]){
-					counter[key] = (counter[key] || 0) + 1;
-				}else{
-					delete counter[key];
-				}
-			});
-			statuses = {};
-			//console.log(counter); //DEBUG
-		},
-		pressed: function(key){
-			return (getCount(key) > 0);
-		},
-		triggered: function(key){
-			return (getCount(key) == 1);
-		}
-	};
+  var statuses = {}, counter = {};
+  function getCount(key){
+    var count = counter[key];
+    return (count == undefined ? 0 : count);
+  }
+  return {
+    KEYS: {
+      ENTER: 13,
+      SPACE: 32
+    },
+    onKeyPressed: function(key){
+      statuses[key] = true;
+    },
+    update: function(){
+      _.each(Input.KEYS, function(key){
+        if (statuses[key]){
+          counter[key] = (counter[key] || 0) + 1;
+        }else{
+          delete counter[key];
+        }
+      });
+      statuses = {};
+      //console.log(counter); //DEBUG
+    },
+    pressed: function(key){
+      return (getCount(key) > 0);
+    },
+    triggered: function(key){
+      return (getCount(key) == 1);
+    }
+  };
 };
 var sceneManager = new function(){
-	var scenes = [];
-	return {
-		goto: function(scene){
-			scenes.unshift(scene);
-		},
-		back: function(){
-			return scenes.shift();
-		},
-		update: function(){
-			var scene = scenes[0];
-			if (scene) scene.update();
-		},
-		render: function(canvas){
-			var scene = scenes[0];
-			if (scene) scene.render(canvas);
-		}
-	};
+  var scenes = [];
+  return {
+    goto: function(scene){
+      scenes.unshift(scene);
+    },
+    back: function(){
+      return scenes.shift();
+    },
+    update: function(){
+      var scene = scenes[0];
+      if (scene) scene.update();
+    },
+    render: function(canvas){
+      var scene = scenes[0];
+      if (scene) scene.render(canvas);
+    }
+  };
 }
 $(function(){
   $(window).keypress(function(e){ Input.onKeyPressed(e.which) });
@@ -130,10 +130,10 @@ $(function(){
       if (delta < interval) return;
       var deltaRatio = delta / interval; //經過的時間與預計的時間的比例。數字越高代表越LAG。
       prevTime += delta - (delta % interval); //若requestAnimFrame是60FPS時，delta會是16ms的倍數。要減掉delta % interval否則會多算時間。
-			Input.update();
+      Input.update();
       sceneManager.update(deltaRatio);
       ctx.clearRect(0, 0, canvas.width, canvas.height);
-			sceneManager.render(canvas);
+      sceneManager.render(canvas);
     })();
   }(40));
 });
@@ -141,51 +141,51 @@ $(function(){
 //  MenuScene
 //-------------------------------------
 function MenuScene(){
-	return {
-		update: function(deltaRatio){
-			if (Input.pressed(Input.KEYS.ENTER)){
-				//TODO sound && animation?
-				sceneManager.goto(new MapScene());
-			} 
-		},
-		render: function(canvas){
-			var ctx = canvas.getContext("2d");
-			imageCacher.ifloaded('images/menu.jpg', function(image){
-				ctx.drawImage(image, 0, 0, canvas.width, canvas.height);	
-			});
-		}
-	};
+  return {
+    update: function(deltaRatio){
+      if (Input.pressed(Input.KEYS.ENTER)){
+        //TODO sound && animation?
+        sceneManager.goto(new MapScene());
+      } 
+    },
+    render: function(canvas){
+      var ctx = canvas.getContext("2d");
+      imageCacher.ifloaded('images/menu.jpg', function(image){
+        ctx.drawImage(image, 0, 0, canvas.width, canvas.height);  
+      });
+    }
+  };
 }
 //-------------------------------------
 //  MapScene
 //-------------------------------------
 function MapScene(){
-	var playerX = 0;
-	return {
-		update: function(deltaRatio){
-			playerX += 5; //keep running
-		},
-		render: function(canvas){
-			var ctx = canvas.getContext("2d");
-			imageCacher.ifloaded('images/background.jpg', function(image){
-				var ratio = 0.1;
-				var width = image.width * (canvas.height / image.height);
-				var dx = -(playerX * ratio) % width;
-				while(dx < canvas.width){
-					ctx.drawImage(image, dx, 0, width, canvas.height);	
-					dx += width;
-				}
-			});
-			imageCacher.ifloaded('images/ground.png', function(image){
-				var width = image.width * (canvas.height / image.height);
-				var dx = -playerX % width;
-				while(dx < canvas.width){
-					ctx.drawImage(image, dx, 0, width, canvas.height);	
-					dx += width;
-				}
-			});
-		}
-	};
+  var playerX = 0;
+  return {
+    update: function(deltaRatio){
+      playerX += 5; //keep running
+    },
+    render: function(canvas){
+      var ctx = canvas.getContext("2d");
+      imageCacher.ifloaded('images/background.jpg', function(image){
+        var ratio = 0.1;
+        var width = image.width * (canvas.height / image.height);
+        var dx = -(playerX * ratio) % width;
+        while(dx < canvas.width){
+          ctx.drawImage(image, dx, 0, width, canvas.height);  
+          dx += width;
+        }
+      });
+      imageCacher.ifloaded('images/ground.png', function(image){
+        var width = image.width * (canvas.height / image.height);
+        var dx = -playerX % width;
+        while(dx < canvas.width){
+          ctx.drawImage(image, dx, 0, width, canvas.height);  
+          dx += width;
+        }
+      });
+    }
+  };
 }
 
 
