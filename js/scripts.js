@@ -165,6 +165,9 @@ function MapScene(){
   return {
     update: function(deltaRatio){
       player.x += 5; //keep running
+      _.each(characterFoctory.characters, function(character){
+        character.update();
+      });
     },
     render: function(canvas){
       var ctx = canvas.getContext("2d");
@@ -187,7 +190,13 @@ function MapScene(){
       });
       _.each(characterFoctory.characters, function(character){
         imageCacher.ifloaded(character.path, function(image){
-          ctx.drawImage(image, character.x - player.x, canvas.height - character.y - image.height, image.width, image.height);  
+          var x = character.x - player.x;
+          var y = canvas.height - character.y - image.height;
+          var sx = character.getPattern() / character.maxPattern * image.width;
+          var sy = 0;
+          var width = image.width / character.maxPattern;
+          var height = image.height;
+          ctx.drawImage(image, sx, sy, width, height, x, y, width, height);
         });
       });
     }
@@ -198,22 +207,33 @@ function MapScene(){
 //-------------------------------------
 var characterFoctory = new function(){
   var MAX_PATTERNS = {
-    "wolf.png": 4
+    "images/wolf.png": 4
   };
+  function getMaxPattern(path){ return MAX_PATTERNS[path] || 1; }
   var characters = {}, counter = 0;
   return {
     characters: characters,
     create: function(path, x, y){
       var cid = (counter += 1);
-      var maxPattern = MAX_PATTERNS[path];
-      return characters[cid] = {
+      var pattern = 0, patternCounter = 0, patternAnimeSpeed = 12;
+      var character = {
         x: x,
         y: y,
         path: path,
+        getPattern: function(){ return pattern; },
+        maxPattern: getMaxPattern(path),
+        update: function(){
+          patternCounter += patternAnimeSpeed;
+          if (patternCounter > 100){
+            patternCounter -= 100;
+            pattern = (pattern + 1) % character.maxPattern;
+          }
+        },
         destroy: function(){
           delete characters[cid];
         }
       };
+      return characters[cid] = character;
     }
   }
 }
