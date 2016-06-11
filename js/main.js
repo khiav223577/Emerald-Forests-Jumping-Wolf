@@ -43,10 +43,22 @@ function MenuScene(){
 //  MapScene
 //-------------------------------------
 function MapScene(){
-  var player = characterFoctory.create('images/characters/wolf.png', 0, 80, function(){
-    if (Input.pressed(Input.KEYS.RIGHT)) player.x += 5;
-    // if (Input.pressed(Input.KEYS.SPACE)) player.jump();
-  });
+  var BASE_Y = 80;
+  var player = (function(){
+    var vy = 0;
+    return characterFoctory.create('images/characters/wolf.png', 0, BASE_Y, function(){
+      if (Input.pressed(Input.KEYS.RIGHT)) player.x += 5;
+      if (Input.pressed(Input.KEYS.UP) && player.y == BASE_Y) vy = 10;
+      if (player.y > BASE_Y){
+        vy -= 1; //gravity
+      }
+      player.y += vy;
+      if (player.y < BASE_Y){
+        player.y = BASE_Y;
+        vy = 0;
+      }
+    });
+  })();
   var enemy;
   return {
     update: function(deltaRatio){
