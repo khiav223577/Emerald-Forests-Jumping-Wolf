@@ -163,7 +163,7 @@ function MapScene(){
 	var playerX = 0;
 	return {
 		update: function(deltaRatio){
-			playerX += 8; //keep running
+			playerX += 5; //keep running
 		},
 		render: function(canvas){
 			var ctx = canvas.getContext("2d");
