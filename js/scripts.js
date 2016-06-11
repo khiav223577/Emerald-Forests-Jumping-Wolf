@@ -63,6 +63,39 @@ window.requestAnimFrame = function(){
 //-------------------------------------
 //  main
 //-------------------------------------
+var Input = new function(){
+	var statuses = {}, counter = {};
+	function getCount(key){
+		var count = counter[key];
+		return (count == undefined ? 0 : count);
+	}
+	return {
+		KEYS: {
+			ENTER: 13,
+			SPACE: 32
+		},
+		onKeyPressed: function(key){
+			statuses[key] = true;
+		},
+		update: function(){
+			_.each(Input.KEYS, function(key){
+				if (statuses[key]){
+					counter[key] = (counter[key] || 0) + 1;
+				}else{
+					delete counter[key];
+				}
+			});
+			statuses = {};
+			//console.log(counter); //DEBUG
+		},
+		pressed: function(key){
+			return (getCount(key) > 0);
+		},
+		triggered: function(key){
+			return (getCount(key) == 1);
+		}
+	};
+};
 var sceneManager = new function(){
 	var scenes = [];
 	return {
@@ -82,22 +115,11 @@ var sceneManager = new function(){
 		}
 	};
 }
-function MapScene(){
-	return {
-		update: function(){
-
-		},
-		render: function(ctx){
-			imageCacher.ifloaded('images/background.png', function(image){
-				ctx.drawImage(image, 0, 0, image.width, image.height);
-			});
-		}
-	};
-}
 $(function(){
+  $(window).keypress(function(e){ Input.onKeyPressed(e.which) });
   var canvas = $('#game_canvas')[0];
   var ctx = canvas.getContext("2d");
-  sceneManager.goto(new MapScene()); //first scene //TODO game menu scene
+  sceneManager.goto(new MenuScene()); //first scene //TODO game menu scene
   ;(function(fps){
     var interval = 1000 / fps;
     var prevTime = Date.now();
@@ -108,12 +130,40 @@ $(function(){
       if (delta < interval) return;
       var deltaRatio = delta / interval; //經過的時間與預計的時間的比例。數字越高代表越LAG。
       prevTime += delta - (delta % interval); //若requestAnimFrame是60FPS時，delta會是16ms的倍數。要減掉delta % interval否則會多算時間。
+			Input.update();
       sceneManager.update(deltaRatio);
       ctx.clearRect(0, 0, canvas.width, canvas.height);
 			sceneManager.render(ctx);
     })();
   }(40));
 });
+//-------------------------------------
+//  MenuScene
+//-------------------------------------
+function MenuScene(){
+	return {
+		update: function(deltaRatio){
+			if (Input.pressed(Input.KEYS.ENTER)) sceneManager.goto(new MapScene());
+		},
+		render: function(ctx){
+			
+		}
+	};
+}
+//-------------------------------------
+//  MapScene
+//-------------------------------------
+function MapScene(){
+	return {
+		update: function(deltaRatio){
+		},
+		render: function(ctx){
+			imageCacher.ifloaded('images/background.png', function(image){
+				ctx.drawImage(image, 0, 0, image.width, image.height);
+			});
+		}
+	};
+}
 
 
 
