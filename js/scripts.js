@@ -109,9 +109,9 @@ var sceneManager = new function(){
 			var scene = scenes[0];
 			if (scene) scene.update();
 		},
-		render: function(ctx){
+		render: function(canvas){
 			var scene = scenes[0];
-			if (scene) scene.render(ctx);
+			if (scene) scene.render(canvas);
 		}
 	};
 }
@@ -133,7 +133,7 @@ $(function(){
 			Input.update();
       sceneManager.update(deltaRatio);
       ctx.clearRect(0, 0, canvas.width, canvas.height);
-			sceneManager.render(ctx);
+			sceneManager.render(canvas);
     })();
   }(40));
 });
@@ -143,10 +143,13 @@ $(function(){
 function MenuScene(){
 	return {
 		update: function(deltaRatio){
-			if (Input.pressed(Input.KEYS.ENTER)) sceneManager.goto(new MapScene());
+			if (Input.pressed(Input.KEYS.ENTER)){
+				//TODO sound && animation?
+				sceneManager.goto(new MapScene());
+			} 
 		},
-		render: function(ctx){
-			
+		render: function(canvas){
+			var ctx = canvas.getContext("2d");
 		}
 	};
 }
@@ -157,9 +160,15 @@ function MapScene(){
 	return {
 		update: function(deltaRatio){
 		},
-		render: function(ctx){
-			imageCacher.ifloaded('images/background.png', function(image){
-				ctx.drawImage(image, 0, 0, image.width, image.height);
+		render: function(canvas){
+			var ctx = canvas.getContext("2d");
+			imageCacher.ifloaded('images/background.jpg', function(image){
+				var width = image.width * (canvas.height / image.height);
+				ctx.drawImage(image, 0, 0, width, canvas.height);
+			});
+			imageCacher.ifloaded('images/ground.png', function(image){
+				var width = image.width * (canvas.height / image.height);
+				ctx.drawImage(image, 0, 0, width, canvas.height);
 			});
 		}
 	};
