@@ -44,10 +44,15 @@ function MenuScene(){
 //  MapScene
 //-------------------------------------
 function MapScene(){
-  var player = characterFoctory.create('images/wolf.png', 0, 80);
+  var player = characterFoctory.create('images/characters/wolf.png', 0, 80);
+  var enemy;
   return {
     update: function(deltaRatio){
       player.x += 5; //keep running
+      if (player.x % 1200 == 50){ 
+        if (enemy) enemy.destroy();
+        enemy = characterFoctory.create('images/characters/enemy.png', player.x + 1000, 80);
+      }
       _.each(characterFoctory.characters, function(character){
         character.update();
       });
@@ -87,7 +92,8 @@ function MapScene(){
 //-------------------------------------
 var characterFoctory = new function(){
   var MAX_PATTERNS = {
-    "images/wolf.png": 4
+    "images/characters/wolf.png": 4,
+    "images/characters/enemy.png": 4
   };
   function getMaxPattern(path){ return MAX_PATTERNS[path] || 1; }
   var characters = {}, counter = 0;
