@@ -151,7 +151,8 @@ function MenuScene(){
     render: function(canvas){
       var ctx = canvas.getContext("2d");
       imageCacher.ifloaded('images/menu.jpg', function(image){
-        ctx.drawImage(image, 0, 0, canvas.width, canvas.height);  
+        var width = image.width * (canvas.height / image.height);
+        ctx.drawImage(image, (canvas.width - width) / 2, 0, width, canvas.height);  
       });
     }
   };
@@ -160,17 +161,17 @@ function MenuScene(){
 //  MapScene
 //-------------------------------------
 function MapScene(){
-  var playerX = 0;
+  var player = characterFoctory.create('wolf.png');
   return {
     update: function(deltaRatio){
-      playerX += 5; //keep running
+      player.x += 5; //keep running
     },
     render: function(canvas){
       var ctx = canvas.getContext("2d");
       imageCacher.ifloaded('images/background.jpg', function(image){
         var ratio = 0.1;
         var width = image.width * (canvas.height / image.height);
-        var dx = -(playerX * ratio) % width;
+        var dx = -(player.x * ratio) % width;
         while(dx < canvas.width){
           ctx.drawImage(image, dx, 0, width, canvas.height);  
           dx += width;
@@ -178,16 +179,40 @@ function MapScene(){
       });
       imageCacher.ifloaded('images/ground.png', function(image){
         var width = image.width * (canvas.height / image.height);
-        var dx = -playerX % width;
+        var dx = -player.x % width;
         while(dx < canvas.width){
           ctx.drawImage(image, dx, 0, width, canvas.height);  
           dx += width;
         }
       });
+      imageCacher.ifloaded('images/ground.png', function(image){
+
+      });
     }
   };
 }
-
+//-------------------------------------
+//  Character
+//-------------------------------------
+var characterFoctory = new function(){
+  var MAX_PATTERNS = {
+    "wolf.png": 4
+  };
+  var characters = {}, counter = 0;
+  return {
+    create: function(path){
+      var cid = (counter += 1);
+      var maxPattern = MAX_PATTERNS[path];
+      return characters[cid] = {
+        x: 0,
+        path: path,
+        destroy: function(){
+          delete characters[cid];
+        }
+      };
+    }
+  }
+}
 
 
 
