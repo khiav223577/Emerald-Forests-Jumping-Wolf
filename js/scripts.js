@@ -63,17 +63,23 @@ window.requestAnimFrame = function(){
 //-------------------------------------
 //  main
 //-------------------------------------
+var viewport = new function(){
+	return {
+		render: function(ctx){
+			imageCacher.ifloaded('images/background.png', function(image){
+				ctx.drawImage(image, 0, 0, image.width, image.height);
+			});
+		}
+	};
+};
 $(function(){
-  var $canvas = $('#game_canvas')
-  var ctx = $canvas[0].getContext("2d");
-  ctx.fillStyle = "#FF0000";
-  ctx.fillRect(0,0,800,600);
+  var canvas = $('#game_canvas')[0];
+  var ctx = canvas.getContext("2d");
   var renderer = new function(){
   	return {
   		refresh: function(deltaRatio){
-				imageCacher.ifloaded('images/background.png', function(image){
-					ctx.drawImage(image, 0, 0, image.width, image.height);
-				});
+  			ctx.clearRect(0, 0, canvas.width, canvas.height);
+				viewport.render(ctx);
   		}
   	}
   };
