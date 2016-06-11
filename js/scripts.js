@@ -63,26 +63,41 @@ window.requestAnimFrame = function(){
 //-------------------------------------
 //  main
 //-------------------------------------
-var viewport = new function(){
+var sceneManager = new function(){
+	var scenes = [];
 	return {
+		goto: function(scene){
+			scenes.unshift(scene);
+		},
+		back: function(){
+			return scenes.shift();
+		},
+		update: function(){
+			var scene = scenes[0];
+			if (scene) scene.update();
+		},
+		render: function(ctx){
+			var scene = scenes[0];
+			if (scene) scene.render(ctx);
+		}
+	};
+}
+function MapScene(){
+	return {
+		update: function(){
+
+		},
 		render: function(ctx){
 			imageCacher.ifloaded('images/background.png', function(image){
 				ctx.drawImage(image, 0, 0, image.width, image.height);
 			});
 		}
 	};
-};
+}
 $(function(){
   var canvas = $('#game_canvas')[0];
   var ctx = canvas.getContext("2d");
-  var renderer = new function(){
-  	return {
-  		refresh: function(deltaRatio){
-  			ctx.clearRect(0, 0, canvas.width, canvas.height);
-				viewport.render(ctx);
-  		}
-  	}
-  };
+  sceneManager.goto(new MapScene()); //first scene //TODO game menu scene
   ;(function(fps){
     var interval = 1000 / fps;
     var prevTime = Date.now();
@@ -93,7 +108,9 @@ $(function(){
       if (delta < interval) return;
       var deltaRatio = delta / interval; //經過的時間與預計的時間的比例。數字越高代表越LAG。
       prevTime += delta - (delta % interval); //若requestAnimFrame是60FPS時，delta會是16ms的倍數。要減掉delta % interval否則會多算時間。
-      renderer.refresh(deltaRatio);
+      sceneManager.update(deltaRatio);
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+			sceneManager.render(ctx);
     })();
   }(40));
 });
