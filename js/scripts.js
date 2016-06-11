@@ -161,7 +161,7 @@ function MenuScene(){
 //  MapScene
 //-------------------------------------
 function MapScene(){
-  var player = characterFoctory.create('wolf.png');
+  var player = characterFoctory.create('images/wolf.png', 0, 80);
   return {
     update: function(deltaRatio){
       player.x += 5; //keep running
@@ -185,8 +185,10 @@ function MapScene(){
           dx += width;
         }
       });
-      imageCacher.ifloaded('images/ground.png', function(image){
-
+      _.each(characterFoctory.characters, function(character){
+        imageCacher.ifloaded(character.path, function(image){
+          ctx.drawImage(image, character.x - player.x, canvas.height - character.y - image.height, image.width, image.height);  
+        });
       });
     }
   };
@@ -200,11 +202,13 @@ var characterFoctory = new function(){
   };
   var characters = {}, counter = 0;
   return {
-    create: function(path){
+    characters: characters,
+    create: function(path, x, y){
       var cid = (counter += 1);
       var maxPattern = MAX_PATTERNS[path];
       return characters[cid] = {
-        x: 0,
+        x: x,
+        y: y,
         path: path,
         destroy: function(){
           delete characters[cid];
