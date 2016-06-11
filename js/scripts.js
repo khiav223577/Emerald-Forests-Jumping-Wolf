@@ -157,6 +157,7 @@ function MenuScene(){
 //  MapScene
 //-------------------------------------
 function MapScene(){
+	var playerX = 0;
 	return {
 		update: function(deltaRatio){
 		},
