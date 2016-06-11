@@ -43,8 +43,11 @@ function MenuScene(){
 //  MapScene
 //-------------------------------------
 function MapScene(){
-  var VIEWPORT_X = 90;
-  var BASE_Y = 80;
+  var VIEWPORT_X = 90; //視角讓狼固定在的X位置
+  var BASE_Y = 80;     //地面高度
+//-------------------------------------
+//  player
+//-------------------------------------
   var player = (function(){
     var vx = 0, vy = 0;
     return characterFoctory.create('images/characters/wolf.png', 0, BASE_Y, function(){
@@ -63,15 +66,25 @@ function MapScene(){
       }
     });
   })();
-  var nextEnemyRespawnAt = 50;
-  var enemy;
+//-------------------------------------
+//  enemy
+//-------------------------------------
+  var enemyRespawnController = new function(){
+    var nextEnemyRespawnAt = 50;
+    var enemy;
+    return {
+      update: function(){
+        if (player.x > nextEnemyRespawnAt){ 
+          if (enemy) enemy.destroy();
+          enemy = characterFoctory.create('images/characters/enemy.png', player.x + 1000, BASE_Y);
+          nextEnemyRespawnAt = player.x + 1100 + Math.rand(200);
+        }
+      }
+    };
+  };
   return {
     update: function(deltaRatio){
-      if (player.x > nextEnemyRespawnAt){ 
-        if (enemy) enemy.destroy();
-        enemy = characterFoctory.create('images/characters/enemy.png', player.x + 1000, BASE_Y);
-        nextEnemyRespawnAt = player.x + 1100 + Math.rand(200);
-      }
+      enemyRespawnController.update();
       _.each(characterFoctory.characters, function(character){
         character.update();
       });
