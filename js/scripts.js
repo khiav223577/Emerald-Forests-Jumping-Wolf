@@ -171,10 +171,12 @@ function MapScene(){
     },
     render: function(canvas){
       var ctx = canvas.getContext("2d");
+      var viewX = player.x - 80;
       imageCacher.ifloaded('images/background.jpg', function(image){
         var ratio = 0.1;
         var width = image.width * (canvas.height / image.height);
-        var dx = -(player.x * ratio) % width;
+        var dx = -(viewX * ratio) % width;
+        if (dx > 0) dx -= width;
         while(dx < canvas.width){
           ctx.drawImage(image, dx, 0, width, canvas.height);  
           dx += width;
@@ -182,7 +184,8 @@ function MapScene(){
       });
       imageCacher.ifloaded('images/ground.png', function(image){
         var width = image.width * (canvas.height / image.height);
-        var dx = -player.x % width;
+        var dx = -viewX % width;
+        if (dx > 0) dx -= width;
         while(dx < canvas.width){
           ctx.drawImage(image, dx, 0, width, canvas.height);  
           dx += width;
@@ -190,7 +193,7 @@ function MapScene(){
       });
       _.each(characterFoctory.characters, function(character){
         imageCacher.ifloaded(character.path, function(image){
-          var x = character.x - player.x;
+          var x = character.x - viewX;
           var y = canvas.height - character.y - image.height;
           var sx = character.getPattern() / character.maxPattern * image.width;
           var sy = 0;
