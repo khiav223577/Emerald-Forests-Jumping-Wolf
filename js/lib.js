@@ -72,10 +72,18 @@ var Input = new function(){
   return {
     KEYS: {
       ENTER: 13,
-      SPACE: 32
+      SPACE: 32,
+      LEFT: 37,
+      UP: 38,
+      RIGHT: 39,
+      DOWN: 40,
+      A: 65,
+      D: 68,
+      S: 83,
+      W: 87
     },
-    onKeyPressed: function(key){
-      statuses[key] = true;
+    setKeyStatus: function(key, status){
+      statuses[key] = status;
     },
     update: function(){
       _.each(Input.KEYS, function(key){
@@ -85,8 +93,7 @@ var Input = new function(){
           delete counter[key];
         }
       });
-      statuses = {};
-      //console.log(counter); //DEBUG
+      // console.log(counter); //DEBUG
     },
     pressed: function(key){
       return (getCount(key) > 0);
@@ -96,6 +103,14 @@ var Input = new function(){
     }
   };
 };
+$(function(){
+  $(window).keydown(function(e){ 
+    // console.log(e.which); //DEBUG
+    Input.setKeyStatus(e.which, true); 
+  }).keyup(function(e){ 
+    Input.setKeyStatus(e.which, false); 
+  });
+});
 var sceneManager = new function(){
   var scenes = [];
   return {

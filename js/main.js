@@ -1,5 +1,4 @@
 $(function(){
-  $(window).keypress(function(e){ Input.onKeyPressed(e.which) });
   var canvas = $('#game_canvas')[0];
   var ctx = canvas.getContext("2d");
   sceneManager.goto(new MenuScene()); //first scene //TODO game menu scene
@@ -44,11 +43,14 @@ function MenuScene(){
 //  MapScene
 //-------------------------------------
 function MapScene(){
-  var player = characterFoctory.create('images/characters/wolf.png', 0, 80);
+  var player = characterFoctory.create('images/characters/wolf.png', 0, 80, function(){
+    if (Input.pressed(Input.KEYS.RIGHT)) player.x += 5;
+    // if (Input.pressed(Input.KEYS.SPACE)) player.jump();
+  });
   var enemy;
   return {
     update: function(deltaRatio){
-      player.x += 5; //keep running
+      // 
       if (player.x % 1200 == 50){ 
         if (enemy) enemy.destroy();
         enemy = characterFoctory.create('images/characters/enemy.png', player.x + 1000, 80);
@@ -99,7 +101,7 @@ var characterFoctory = new function(){
   var characters = {}, counter = 0;
   return {
     characters: characters,
-    create: function(path, x, y){
+    create: function(path, x, y, preUpdateFunc){
       var cid = (counter += 1);
       var pattern = 0, patternCounter = 0, patternAnimeSpeed = 12;
       var character = {
@@ -109,6 +111,7 @@ var characterFoctory = new function(){
         getPattern: function(){ return pattern; },
         maxPattern: getMaxPattern(path),
         update: function(){
+          if (preUpdateFunc) preUpdateFunc();
           patternCounter += patternAnimeSpeed;
           if (patternCounter > 100){
             patternCounter -= 100;
