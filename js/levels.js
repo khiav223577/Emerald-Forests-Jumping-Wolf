@@ -15,7 +15,7 @@ function createLevelController(BASE_Y){
             ];
             _.times(10, function(s){
               sx += 500 + Math.rand(300);
-              levels.push({position: sx, emyAttrs: _.sample(emys, 1)});
+              levels.push({position: sx, emyAttrs: _.sample(emys, 3)});
             });
             break;}
           case 2: {
@@ -50,7 +50,7 @@ function createLevelController(BASE_Y){
         var x = level.position;
         _.each(level.emyAttrs, function(attr){
           ;(function(){
-            var animator = new SpringAnimator(0, 20, 0.3, 800, function(y){ character.attrs.y = y; });
+            var animator = new SpringAnimator(BASE_Y, 20, 0.3, 1600, function(y){ character.attrs.y = y; });
             var character = characterFoctory.create(attr.path, {
               x: x, 
               y: BASE_Y, 
@@ -61,8 +61,8 @@ function createLevelController(BASE_Y){
               animator.update();
             });
             ;(function bounce(){
-              animator.setVal(BASE_Y + 40, function(){
-                animator.setVal(BASE_Y, function(){
+              animator.setVal(BASE_Y + 50 + Math.rand(20)).delay(30 + Math.rand(10), function(){
+                animator.setVal(BASE_Y + Math.rand(10)).delay(30 + Math.rand(10), function(){
                   bounce();
                 });
               });

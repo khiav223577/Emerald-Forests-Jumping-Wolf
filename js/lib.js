@@ -241,7 +241,7 @@ function SpringAnimator(defaultVal, updateSpan, zeta, time, onUpdate){
   var xv = {x: defaultVal, v: 0};
   var omega = 2 * Math.PI * updateSpan / time;
   var animaFunc;
-  var delayCount = 0, delayedArguments = [];
+  var delayCount = 0, delayCallback, delayedArguments = [];
   return thisObj = {
     update: function(){
       if (animaFunc == undefined) return;
@@ -256,6 +256,7 @@ function SpringAnimator(defaultVal, updateSpan, zeta, time, onUpdate){
             var tmp = delayedArguments;
             delayedArguments = [];
             _.each(tmp, function(data){ thisObj[data[0]].apply(thisObj, data[1]); });
+            delayCallback();
           }
         }
         var preX = xv.x;
@@ -272,9 +273,10 @@ function SpringAnimator(defaultVal, updateSpan, zeta, time, onUpdate){
       };
       return thisObj;
     },
-    delay: function(time){
+    delay: function(time, callback){
       if (delayCount > 0){ delayedArguments.push(['delay', arguments]); return thisObj; }
       delayCount = time;
+      delayCallback = callback;
       return thisObj;
     },
     remove: function(onRemove){
