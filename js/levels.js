@@ -58,7 +58,7 @@ function createLevelController(BASE_Y){
               hp: attr.hp,
               atk: attr.atk
             }, function(thisObj){
-              if (offY > 19) dir = -1;
+              if (offY > 40) dir = -1;
               if (offY <  1) dir = 1;
               offY += dir;
               character.attrs.y = BASE_Y + offY;

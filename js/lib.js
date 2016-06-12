@@ -227,4 +227,57 @@ var characterFoctory = new function(){
     }
   }
 }
+function NumericSpring(xv, xt, zeta, omega){
+  var f = 1.0 + 2.0 * zeta * omega;
+  var oo = omega * omega;
+  var detInv = 1.0 / (f + oo);
+  var detX = f * xv.x + xv.v + oo * xt;
+  var detV = xv.v + oo * (xt - xv.x);
+  xv.x = detX * detInv;
+  xv.v = detV * detInv;
+}
+function SpringAnimator(defaultVal, updateSpan, zeta, time, onUpdate){
+  var thisObj, epsilon = 0.01;
+  var xv = {x: defaultVal, v: 0};
+  var omega = 2 * Math.PI * updateSpan / time;
+  var animator = new AnimateManager();
+  var delayCount = 0, delayedArguments = [];
+  return thisObj = {
+    setVal: function(targetVal, onEnd){
+      if (delayCount > 0){ delayedArguments.push(['setVal', arguments]); return thisObj; }
+      animator.start(function(){
+        if (delayCount > 0){
+          delayCount -= 1;
+          if (delayCount == 0){
+            var tmp = delayedArguments;
+            delayedArguments = [];
+            _.each(tmp, function(data){ thisObj[data[0]].apply(thisObj, data[1]); });
+          }
+        }
+        var preX = xv.x;
+        NumericSpring(xv, targetVal, zeta, omega);
+        if (Math.abs(preX - xv.x) < epsilon && Math.abs(targetVal - xv.x) < epsilon){
+          xv.x = targetVal;
+          xv.v = 0;
+          if (onUpdate) onUpdate(targetVal);
+          if (onEnd) onEnd();
+          return false;
+        }
+        if (onUpdate) onUpdate(xv.x);
+        return true;
+      }, updateSpan);
+      return thisObj;
+    },
+    delay: function(time){
+      if (delayCount > 0){ delayedArguments.push(['delay', arguments]); return thisObj; }
+      delayCount = time;
+      return thisObj;
+    },
+    remove: function(onRemove){
+      if (delayCount > 0){ delayedArguments.push(['remove', arguments]); return thisObj; }
+      animator.stop();
+      if (onRemove) onRemove();
+    }
+  };
+}
 
