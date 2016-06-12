@@ -75,7 +75,7 @@ function MapScene(){
     initialize: function(){
       player = (function(){
         var vx = 0, vy = 0;
-        return sceneManager.getScene().characterFoctory.create('images/characters/wolf.png', {
+        return sceneManager.getScene().characterFactory.create('images/characters/wolf.png', {
           x: VIEWPORT_X, 
           y: BASE_Y,
           hp: 100,

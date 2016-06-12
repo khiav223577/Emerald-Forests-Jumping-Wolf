@@ -158,7 +158,8 @@ var sceneManager = new function(){
   return thisObj = {
     push: function(scene){
       scene.viewX = 0;
-      scene.characterFoctory = createCharacterFactory();
+      scene.characterFactory = createCharacterFactory();
+      scene.bulletFactor = createBulletFactory(scene.characterFactory);
       scenes.unshift(scene);
       scene.initialize();
     },
@@ -168,14 +169,14 @@ var sceneManager = new function(){
     },
     pop: function(){
       var scene = scenes.shift();
-      if (scene) scene.characterFoctory.destroy();
+      if (scene) scene.characterFactory.destroy();
       return scene;
     },
     update: function(){
       var scene = scenes[0];
       if (scene){
         scene.update();
-        _.each(scene.characterFoctory.characters, function(character){
+        _.each(scene.characterFactory.characters, function(character){
           character.update();
         });
       } 
@@ -185,7 +186,7 @@ var sceneManager = new function(){
       if (scene){
         scene.render(canvas);
         var ctx = canvas.getContext("2d");
-        _.each(scene.characterFoctory.characters, function(character){
+        _.each(scene.characterFactory.characters, function(character){
           character.ifLoaded(function(image){
             var x = character.attrs.x - scene.viewX;
             var y = canvas.height - character.attrs.y - image.height;
@@ -220,7 +221,7 @@ function createCharacterFactory(){
     var characters = {}, counter = 0;
     return {
       characters: characters,
-      create: function(path, attrs, preUpdateFunc){
+      create: function(path, attrs, preUpdateFunc){ //attrs = {x: ?, y: ?, atk: ?, hp: ?}
         var cid = (counter += 1);
         var isDead = new FlagObject(false), isDestroyed = new FlagObject(false);
         var pattern = 0, patternCounter = 0, patternAnimeSpeed = 12;
@@ -257,6 +258,19 @@ function createCharacterFactory(){
         _.each(characters, function(character){ character.destroy(); });
         characters = undefined;
       }
+    }
+  }
+}
+//-------------------------------------
+//  Bullet
+//-------------------------------------
+function createBulletFactory(characterFactory){
+  return {
+    create: function(path, attrs, preUpdateFunc){  //attrs = {x: ?, y: ?, atk: ?, hp: ?}
+      var character = characterFactory.create(path, attrs, preUpdateFunc);
+    },
+    destroy: function(){
+      characterFactory.destroy();
     }
   }
 }
