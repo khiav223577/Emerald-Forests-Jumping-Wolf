@@ -34,11 +34,18 @@ var imageCacher = new function(){
         loadImage(url, callback);
       }
     },
-    ifloaded: function(url, callback){
+    ifloaded: function(url, callback, scale){
       var image = imageCache[url];
       if (image == undefined){
         thisObj.onload(url);
       }else if (onLoadCache[url] == undefined){
+        if (scale && scale != 1){
+          image = imageCacher.loadBy(url + '=> scaled: ' + scale, function(){ 
+            var width = Math.floor(image.width * scale);
+            var height = Math.floor(image.height * scale);
+            return (new FilterableImage(image, width, height).getCanvas()); 
+          })
+        }
         callback(image);
       }
     },
@@ -196,17 +203,7 @@ var characterFoctory = new function(){
       var character = {
         attrs: attrs,
         ifLoaded: function(callback){
-          imageCacher.ifloaded(path, function(image){
-            if (attrs.scale == undefined || attrs.scale == 1){
-              callback(image);  
-            }else{
-              callback(imageCacher.loadBy(path + '=> scaled', function(){ 
-                var width = Math.floor(image.width * attrs.scale);
-                var height = Math.floor(image.height * attrs.scale);
-                return (new FilterableImage(image, width, height).getCanvas()); 
-              }));
-            }
-          });
+          imageCacher.ifloaded(path, function(image){ callback(image); }, attrs.scale);
         },
         getPattern: function(){ return pattern; },
         maxPattern: getMaxPattern(path),
