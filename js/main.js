@@ -1,20 +1,25 @@
-$(function(){
-  var $canvas = $('#game_canvas');
+function bindResize($canvas){
   var canvas = $canvas[0];
-  var ctx = canvas.getContext("2d");
-  sceneManager.goto(new MenuScene()); //first scene //TODO game menu scene
   var canvasRatio = canvas.width / canvas.height;
   var $window = $(window).resize(function(){
     resizeCanvas();
   });
-  ;(function resizeCanvas(){
+  function resizeCanvas(){
     var width = $window.width();
     var height = $window.height();
     $canvas.css({
       width: height * canvasRatio,
       height: height
     });
-  })();
+  }
+  resizeCanvas();
+}
+$(function(){
+  var $canvas = $('#game_canvas');
+  var canvas = $canvas[0];
+  var ctx = canvas.getContext("2d");
+  sceneManager.goto(new MenuScene()); //first scene //TODO game menu scene
+  bindResize($canvas);
   ;(function(fps){
     var interval = 1000 / fps;
     var prevTime = Date.now();
