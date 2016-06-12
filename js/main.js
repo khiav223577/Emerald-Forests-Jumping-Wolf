@@ -74,71 +74,10 @@ function MapScene(){
 //-------------------------------------
 //  enemy
 //-------------------------------------
-  var enemyRespawnController = new function(){
-    var levels = [], difficulty = 0;
-    return {
-      update: function(){
-        if (levels[0] == undefined){
-          (function(){
-            difficulty += 1;
-            var sx = player.attrs.x + 100;  
-            switch(difficulty){
-            case 1: {
-              var emys = [
-                {hp: 100, atk: 100, path: 'images/characters/monster-01.png'},
-                {hp: 100, atk: 100, path: 'images/characters/monster-02.png'},
-                {hp: 100, atk: 100, path: 'images/characters/monster-03.png'},
-              ];
-              _.times(10, function(s){
-                sx += 500 + Math.rand(300);
-                levels.push({position: sx, emyAttrs: _.sample(emys, 1)});
-              });
-              break;}
-            case 2: {
-              var emys = [
-                {hp: 100, atk: 100, path: 'images/characters/monster-01.png'},
-                {hp: 100, atk: 100, path: 'images/characters/monster-02.png'},
-                {hp: 100, atk: 100, path: 'images/characters/monster-03.png'},
-              ];
-              _.times(10, function(s){
-                sx += 500 + Math.rand(300);
-                levels.push({position: sx, emyAttrs: _.sample(emys, 2)});
-              });
-              break;}
-            default: {
-              var emys = [
-                {hp: 100, atk: 100, path: 'images/characters/monster-01.png'},
-                {hp: 100, atk: 100, path: 'images/characters/monster-02.png'},
-                {hp: 100, atk: 100, path: 'images/characters/monster-03.png'},
-              ];
-              _.times(10, function(s){
-                sx += 500 + Math.rand(300);
-                levels.push({position: sx, emyAttrs: _.sample(emys, 3)});
-              });
-              break;}
-            }
-            levels.push({position: sx + 2000, emyAttrs: []}); //the break time when player change difficulty
-          })();
-        }
-        var level = levels[0];
-        if (level && level.position < player.attrs.x + 1000){
-          levels.shift();
-          _.each(level.emyAttrs, function(attr){
-            characterFoctory.create(attr.path, {
-              x: level.position, 
-              y: BASE_Y, 
-              scale: 0.5,
-              hp: attr.hp,
-              atk: attr.atk
-            });
-          });
-        }
-      }
-    };
-  };
+  var enemyRespawnController = createLevelController(BASE_Y);
   return {
     update: function(deltaRatio){
-      enemyRespawnController.update();
+      enemyRespawnController.update(player);
       _.each(characterFoctory.characters, function(character){
         character.update();
       });
@@ -173,68 +112,6 @@ function MapScene(){
     }
   };
 }
-//-------------------------------------
-//  Character
-//-------------------------------------
-var characterFoctory = new function(){
-  var MAX_PATTERNS = {
-    "images/characters/wolf.png": 4,
-    "images/characters/enemy.png": 4,
-    "images/characters/monster-01.png": 1,
-    "images/characters/monster-02.png": 1,
-    "images/characters/monster-03.png": 1
-  };
-  function getMaxPattern(path){ return MAX_PATTERNS[path] || 1; }
-  var characters = {}, counter = 0;
-  return {
-    characters: characters,
-    create: function(path, attrs, preUpdateFunc){
-      var cid = (counter += 1);
-      var isDead = false;
-      var pattern = 0, patternCounter = 0, patternAnimeSpeed = 12;
-      function dead(){
-        isDead = true;
-        //TODO 死亡動畫
-        destroy();
-      }
-      function destroy(){
-        delete characters[cid];
-      }
-      var character = {
-        attrs: attrs,
-        ifLoaded: function(callback){
-          imageCacher.ifloaded(path, function(image){
-            if (attrs.scale == undefined || attrs.scale == 1){
-              callback(image);  
-            }else{
-              callback(imageCacher.loadBy(path + '=> scaled', function(){ 
-                var width = Math.floor(image.width * attrs.scale);
-                var height = Math.floor(image.height * attrs.scale);
-                return (new FilterableImage(image, width, height).getCanvas()); 
-              }));
-            }
-          });
-        },
-        getPattern: function(){ return pattern; },
-        maxPattern: getMaxPattern(path),
-        update: function(){
-          if (preUpdateFunc) preUpdateFunc();
-          patternCounter += patternAnimeSpeed;
-          if (patternCounter > 100){
-            patternCounter -= 100;
-            pattern = (pattern + 1) % character.maxPattern;
-          }
-        },
-        damage: function(damage){
-          attrs.hp -= damage;
-          if (attrs.hp < 0 && isDead == false) dead();
-        },
-      };
-      return characters[cid] = character;
-    }
-  }
-}
-
 
 
 
