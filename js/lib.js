@@ -159,7 +159,7 @@ var sceneManager = new function(){
     push: function(scene){
       scene.viewX = 0;
       scene.characterFactory = createCharacterFactory();
-      scene.bulletFactor = createBulletFactory(scene.characterFactory);
+      scene.bulletFactory = createBulletFactory(scene.characterFactory);
       scenes.unshift(scene);
       scene.initialize();
     },
@@ -266,8 +266,11 @@ function createCharacterFactory(){
 //-------------------------------------
 function createBulletFactory(characterFactory){
   return {
-    create: function(path, attrs, preUpdateFunc){  //attrs = {x: ?, y: ?, atk: ?, hp: ?}
-      var character = characterFactory.create(path, attrs, preUpdateFunc);
+    create: function(path, attrs){  //attrs = {x: ?, y: ?, atk: ?, hp: ?}
+      var character = characterFactory.create(path, attrs, function(){
+        character.attrs.x += 10;
+      });
+      return character;
     },
     destroy: function(){
       characterFactory.destroy();

@@ -81,6 +81,17 @@ function MapScene(){
           hp: 100,
           atk: 100
         }, function(){
+          function shoot(path){
+            sceneManager.getScene().bulletFactory.create(path, {
+              x: player.attrs.x,
+              y: player.attrs.y,
+              atk: player.attrs.atk,
+              hp: 1
+            });
+          }
+          if (Input.pressed(Input.KEYS.A)) shoot('images/characters/magic_ball-01.png');
+          if (Input.pressed(Input.KEYS.S)) shoot('images/characters/magic_ball-02.png');
+          if (Input.pressed(Input.KEYS.D)) shoot('images/characters/magic_ball-03.png');
           if (Input.pressed(Input.KEYS.RIGHT)) vx = 6;
           else if (Input.pressed(Input.KEYS.LEFT)) vx = 3;
           else vx = 4;
