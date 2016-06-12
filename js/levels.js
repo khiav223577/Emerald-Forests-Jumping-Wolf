@@ -15,7 +15,7 @@ function createLevelController(BASE_Y){
             ];
             _.times(10, function(s){
               sx += 500 + Math.rand(300);
-              levels.push({position: sx, emyAttrs: _.sample(emys, 3)});
+              levels.push({position: sx, emyAttrs: _.sample(emys, 1)});
             });
             break;}
           case 2: {
@@ -59,6 +59,7 @@ function createLevelController(BASE_Y){
               atk: attr.atk
             }, function(thisObj){
               animator.update();
+              if (character.attrs.x < player.attrs.x) character.damage(999999); //TODO damage player
             });
             ;(function bounce(){
               animator.setVal(BASE_Y + 50 + Math.rand(20)).delay(30 + Math.rand(10), function(){
