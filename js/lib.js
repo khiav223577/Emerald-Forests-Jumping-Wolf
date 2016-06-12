@@ -197,16 +197,8 @@ function createCharacterFactory(){
       characters: characters,
       create: function(path, attrs, preUpdateFunc){
         var cid = (counter += 1);
-        var isDead = false;
+        var isDead = new FlagObject(false), isDestroyed = new FlagObject(false);
         var pattern = 0, patternCounter = 0, patternAnimeSpeed = 12;
-        function dead(){
-          isDead = true;
-          //TODO 死亡動畫
-          destroy();
-        }
-        function destroy(){
-          delete characters[cid];
-        }
         var character = {
           attrs: attrs,
           ifLoaded: function(callback){
@@ -224,8 +216,15 @@ function createCharacterFactory(){
           },
           damage: function(damage){
             attrs.hp -= damage;
-            if (attrs.hp < 0 && isDead == false) dead();
+            if (attrs.hp < 0 && isDead.changeTo(true) == true){
+              //TODO 死亡動畫
+              character.destroy();
+            }
           },
+          destroy: function(){
+            if (isDestroyed.changeTo(true) == false) return;
+            delete characters[cid];
+          }
         };
         return characters[cid] = character;
       }
@@ -302,4 +301,27 @@ function drawImageWithXRepeat(canvas, viewX, ratio, path){
     }
   });
 }
-
+function FlagObject(flag){
+  var thisObj, prevFlag;
+  return thisObj = {
+    changeTo: function(newFlag){ //回傳flag有沒有變
+      if (newFlag == flag) return false;
+      prevFlag = flag;
+      flag = newFlag;
+      return true;
+    },
+    toggle: function(newFlag){
+      thisObj.changeTo(newFlag != undefined ? newFlag : !flag);
+      return thisObj.val();
+    },
+    is: function(checkFlag){
+      return (flag == checkFlag);
+    },
+    val: function(){
+      return flag;
+    },
+    prevVal: function(){
+      return prevFlag;
+    }
+  };
+}
