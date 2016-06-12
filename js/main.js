@@ -43,7 +43,7 @@ $(function(){
 function MenuScene(){
   return {
     initialize: function(){
-      
+      sceneManager.getScene().characterFoctory.create('images/characters/wolf.png', {});
     },
     update: function(deltaRatio){
       if (Input.pressed(Input.KEYS.ENTER)){
@@ -100,26 +100,12 @@ function MapScene(){
     },
     update: function(deltaRatio){
       enemyRespawnController.update(player);
-      _.each(sceneManager.getScene().characterFoctory.characters, function(character){
-        character.update();
-      });
     },
     render: function(canvas){
       var ctx = canvas.getContext("2d");
-      var viewX = player.attrs.x - VIEWPORT_X;
+      var viewX = sceneManager.getScene().viewX = player.attrs.x - VIEWPORT_X;
       drawImageWithXRepeat(canvas, viewX, 0.1, 'images/background.jpg');
       drawImageWithXRepeat(canvas, viewX, 1.0, 'images/ground.png');
-      _.each(sceneManager.getScene().characterFoctory.characters, function(character){
-        character.ifLoaded(function(image){
-          var x = character.attrs.x - viewX;
-          var y = canvas.height - character.attrs.y - image.height;
-          var sx = character.getPattern() / character.maxPattern * image.width;
-          var sy = 0;
-          var width = image.width / character.maxPattern;
-          var height = image.height;
-          ctx.drawImage(image, sx, sy, width, height, x, y, width, height);
-        });
-      });
     }
   };
 }

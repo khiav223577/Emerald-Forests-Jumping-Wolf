@@ -157,6 +157,7 @@ var sceneManager = new function(){
   var thisObj, scenes = [];
   return thisObj = {
     push: function(scene){
+      scene.viewX = 0;
       scene.characterFoctory = createCharacterFactory();
       scenes.unshift(scene);
       scene.initialize();
@@ -172,11 +173,30 @@ var sceneManager = new function(){
     },
     update: function(){
       var scene = scenes[0];
-      if (scene) scene.update();
+      if (scene){
+        scene.update();
+        _.each(scene.characterFoctory.characters, function(character){
+          character.update();
+        });
+      } 
     },
     render: function(canvas){
       var scene = scenes[0];
-      if (scene) scene.render(canvas);
+      if (scene){
+        scene.render(canvas);
+        var ctx = canvas.getContext("2d");
+        _.each(scene.characterFoctory.characters, function(character){
+          character.ifLoaded(function(image){
+            var x = character.attrs.x - scene.viewX;
+            var y = canvas.height - character.attrs.y - image.height;
+            var sx = character.getPattern() / character.maxPattern * image.width;
+            var sy = 0;
+            var width = image.width / character.maxPattern;
+            var height = image.height;
+            ctx.drawImage(image, sx, sy, width, height, x, y, width, height);
+          });
+        });
+      }
     },
     getScene: function(){
       return scenes[0];
