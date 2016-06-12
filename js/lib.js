@@ -154,16 +154,20 @@ $(function(){
   });
 });
 var sceneManager = new function(){
-  var scenes = [];
-  return {
-    goto: function(scene){
+  var thisObj, scenes = [];
+  return thisObj = {
+    push: function(scene){
       scene.characterFoctory = createCharacterFactory();
       scenes.unshift(scene);
       scene.initialize();
     },
-    back: function(){
+    goto: function(scene){
+      while(thisObj.pop() != undefined);
+      thisObj.push(scene);
+    },
+    pop: function(){
       var scene = scenes.shift();
-      scene.characterFoctory.destroy();
+      if (scene) scene.characterFoctory.destroy();
       return scene;
     },
     update: function(){
