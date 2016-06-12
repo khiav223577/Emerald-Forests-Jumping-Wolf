@@ -47,14 +47,24 @@ function createLevelController(BASE_Y){
       var level = levels[0];
       if (level && level.position < player.attrs.x + 1000){
         levels.shift();
+        var x = level.position;
         _.each(level.emyAttrs, function(attr){
-          characterFoctory.create(attr.path, {
-            x: level.position, 
-            y: BASE_Y, 
-            scale: 0.5,
-            hp: attr.hp,
-            atk: attr.atk
-          });
+          ;(function(){
+            var offY = 0, dir = 1;
+            var character = characterFoctory.create(attr.path, {
+              x: x, 
+              y: BASE_Y, 
+              scale: 0.5,
+              hp: attr.hp,
+              atk: attr.atk
+            }, function(thisObj){
+              if (offY > 19) dir = -1;
+              if (offY <  1) dir = 1;
+              offY += dir;
+              character.attrs.y = BASE_Y + offY;
+            });
+          })();
+          x += 80 + Math.rand(50);
         });
       }
     }
