@@ -50,10 +50,17 @@ function MenuScene(){
     },
     render: function(canvas){
       var ctx = canvas.getContext("2d");
-      imageCacher.ifloaded('images/menu.jpg', function(image){
-        var width = image.width * (canvas.height / image.height);
-        ctx.drawImage(image, (canvas.width - width) / 2, 0, width, canvas.height);  
-      });
+      var image = drawImageWithXRepeat(canvas, 0, 0.1, 'images/background.jpg');
+      drawImageWithXRepeat(canvas, 0, 1.0, 'images/ground.png');
+      if (image != undefined){
+        var ratio = (canvas.height / image.height);
+        imageCacher.ifloaded('images/menu/title.png', function(image){
+          ctx.drawImage(image, (canvas.width - image.width) / 2, 120 - image.height / 2, image.width, image.height);  
+        }, ratio);
+        imageCacher.ifloaded('images/menu/jump.png', function(image){
+          ctx.drawImage(image, (canvas.width - image.width) / 2, 350 - image.height / 2, image.width, image.height);  
+        }, ratio);
+      }
     }
   };
 }

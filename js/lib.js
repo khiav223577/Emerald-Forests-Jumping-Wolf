@@ -40,7 +40,7 @@ var imageCacher = new function(){
         thisObj.onload(url);
       }else if (onLoadCache[url] == undefined){
         if (scale && scale != 1){
-          image = imageCacher.loadBy(url + '=> scaled: ' + scale, function(){ 
+          image = imageCacher.loadBy(url + '=> scaled: ' + scale.toFixed(2), function(){ 
             var width = Math.floor(image.width * scale);
             var height = Math.floor(image.height * scale);
             return (new FilterableImage(image, width, height).getCanvas()); 
@@ -283,6 +283,7 @@ function SpringAnimator(defaultVal, updateSpan, zeta, time, onUpdate){
   };
 }
 function drawImageWithXRepeat(canvas, viewX, ratio, path){
+  var result;
   var ctx = canvas.getContext("2d");
   imageCacher.ifloaded(path, function(image){
     var width = image.width * (canvas.height / image.height);
@@ -292,6 +293,8 @@ function drawImageWithXRepeat(canvas, viewX, ratio, path){
       ctx.drawImage(image, dx, 0, width, canvas.height);  
       dx += width;
     }
+    result = image;
   });
+  return result;
 }
 
