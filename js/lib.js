@@ -163,6 +163,7 @@ var sceneManager = new function(){
     },
     back: function(){
       var scene = scenes.shift();
+      scene.characterFoctory.destroy();
       return scene;
     },
     update: function(){
@@ -227,6 +228,10 @@ function createCharacterFactory(){
           }
         };
         return characters[cid] = character;
+      },
+      destroy: function(){
+        _.each(characters, function(character){ character.destroy(); });
+        characters = undefined;
       }
     }
   }
