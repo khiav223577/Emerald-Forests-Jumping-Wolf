@@ -1,3 +1,6 @@
+Math.rand = function(value){
+  return Math.floor(Math.random() * value);
+};
 var imageCacher = new function(){
   var onLoadCache = {}, imageCache = {};
   var thisObj;
@@ -45,6 +48,38 @@ var imageCacher = new function(){
     }
   };
 };
+function FilterableImage(image, width, height, sx, sy){
+  var thisObj;
+  var canvas = document.createElement('canvas');
+  var ctx = canvas.getContext('2d');
+  if (width == undefined) width = image.width;
+  if (height == undefined) height = image.height;
+  canvas.width = width;
+  canvas.height = height;
+  if (sx == undefined){
+    ctx.drawImage(image, 0, 0, width, height);
+  }else{
+    ctx.drawImage(image, sx, sy, width, height, 0, 0, width, height);
+  }
+  var imageData = ctx.getImageData( 0, 0, width, height);
+  var changeFlag = false;
+  return thisObj = {
+    applyFilter: function(filter){
+      changeFlag = true;
+      var args = [imageData.data];
+      for(var i = 1; i < arguments.length; ++i) args.push(arguments[i]);
+      filter.apply(this, args);
+      return thisObj;
+    },
+    getCanvas: function(){
+      if (changeFlag == true){
+        changeFlag = false;
+        ctx.putImageData(imageData, 0, 0);
+      }
+      return canvas;
+    }
+  };
+}
 //-------------------------------------
 //  requestAnimFrame
 //-------------------------------------
@@ -130,3 +165,124 @@ var sceneManager = new function(){
     }
   };
 }
+
+//-------------------------------------
+//  Character
+//-------------------------------------
+var characterFoctory = new function(){
+  var MAX_PATTERNS = {
+    "images/characters/wolf.png": 4,
+    "images/characters/enemy.png": 4,
+    "images/characters/monster-01.png": 1,
+    "images/characters/monster-02.png": 1,
+    "images/characters/monster-03.png": 1
+  };
+  function getMaxPattern(path){ return MAX_PATTERNS[path] || 1; }
+  var characters = {}, counter = 0;
+  return {
+    characters: characters,
+    create: function(path, attrs, preUpdateFunc){
+      var cid = (counter += 1);
+      var isDead = false;
+      var pattern = 0, patternCounter = 0, patternAnimeSpeed = 12;
+      function dead(){
+        isDead = true;
+        //TODO 死亡動畫
+        destroy();
+      }
+      function destroy(){
+        delete characters[cid];
+      }
+      var character = {
+        attrs: attrs,
+        ifLoaded: function(callback){
+          imageCacher.ifloaded(path, function(image){
+            if (attrs.scale == undefined || attrs.scale == 1){
+              callback(image);  
+            }else{
+              callback(imageCacher.loadBy(path + '=> scaled', function(){ 
+                var width = Math.floor(image.width * attrs.scale);
+                var height = Math.floor(image.height * attrs.scale);
+                return (new FilterableImage(image, width, height).getCanvas()); 
+              }));
+            }
+          });
+        },
+        getPattern: function(){ return pattern; },
+        maxPattern: getMaxPattern(path),
+        update: function(){
+          if (preUpdateFunc) preUpdateFunc();
+          patternCounter += patternAnimeSpeed;
+          if (patternCounter > 100){
+            patternCounter -= 100;
+            pattern = (pattern + 1) % character.maxPattern;
+          }
+        },
+        damage: function(damage){
+          attrs.hp -= damage;
+          if (attrs.hp < 0 && isDead == false) dead();
+        },
+      };
+      return characters[cid] = character;
+    }
+  }
+}
+function NumericSpring(xv, xt, zeta, omega){
+  var f = 1.0 + 2.0 * zeta * omega;
+  var oo = omega * omega;
+  var detInv = 1.0 / (f + oo);
+  var detX = f * xv.x + xv.v + oo * xt;
+  var detV = xv.v + oo * (xt - xv.x);
+  xv.x = detX * detInv;
+  xv.v = detV * detInv;
+}
+function SpringAnimator(defaultVal, updateSpan, zeta, time, onUpdate){
+  var thisObj, epsilon = 0.01;
+  var xv = {x: defaultVal, v: 0};
+  var omega = 2 * Math.PI * updateSpan / time;
+  var animaFunc;
+  var delayCount = 0, delayCallback, delayedArguments = [];
+  return thisObj = {
+    update: function(){
+      if (animaFunc == undefined) return;
+      if (animaFunc() == false) animaFunc = undefined;
+    },
+    setVal: function(targetVal, onEnd){
+      if (delayCount > 0){ delayedArguments.push(['setVal', arguments]); return thisObj; }
+      animaFunc = function(){
+        if (delayCount > 0){
+          delayCount -= 1;
+          if (delayCount == 0){
+            var tmp = delayedArguments;
+            delayedArguments = [];
+            _.each(tmp, function(data){ thisObj[data[0]].apply(thisObj, data[1]); });
+            delayCallback();
+          }
+        }
+        var preX = xv.x;
+        NumericSpring(xv, targetVal, zeta, omega);
+        if (Math.abs(preX - xv.x) < epsilon && Math.abs(targetVal - xv.x) < epsilon){
+          xv.x = targetVal;
+          xv.v = 0;
+          if (onUpdate) onUpdate(targetVal);
+          if (onEnd) onEnd();
+          return false;
+        }
+        if (onUpdate) onUpdate(xv.x);
+        return true;
+      };
+      return thisObj;
+    },
+    delay: function(time, callback){
+      if (delayCount > 0){ delayedArguments.push(['delay', arguments]); return thisObj; }
+      delayCount = time;
+      delayCallback = callback;
+      return thisObj;
+    },
+    remove: function(onRemove){
+      if (delayCount > 0){ delayedArguments.push(['remove', arguments]); return thisObj; }
+      if (onRemove) onRemove();
+    }
+  };
+}
+

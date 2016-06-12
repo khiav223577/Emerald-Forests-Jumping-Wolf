@@ -43,39 +43,48 @@ function MenuScene(){
 //  MapScene
 //-------------------------------------
 function MapScene(){
-  var BASE_Y = 80;
+  var VIEWPORT_X = 90; //視角讓狼固定在的X位置
+  var BASE_Y = 80;     //地面高度
+//-------------------------------------
+//  player
+//-------------------------------------
   var player = (function(){
     var vx = 0, vy = 0;
-    return characterFoctory.create('images/characters/wolf.png', 0, BASE_Y, function(){
+    return characterFoctory.create('images/characters/wolf.png', {
+      x: 0, 
+      y: BASE_Y,
+      hp: 100,
+      atk: 100
+    }, function(){
       if (Input.pressed(Input.KEYS.RIGHT)) vx = 6;
       else if (Input.pressed(Input.KEYS.LEFT)) vx = 3;
       else vx = 4;
-      if (Input.pressed(Input.KEYS.UP) && player.y == BASE_Y) vy = 15;
-      if (player.y > BASE_Y){
+      if (Input.pressed(Input.KEYS.UP) && player.attrs.y == BASE_Y) vy = 15;
+      if (player.attrs.y > BASE_Y){
         vy -= 1; //gravity
       }
-      player.x += vx;
-      player.y += vy;
-      if (player.y < BASE_Y){
-        player.y = BASE_Y;
+      player.attrs.x += vx;
+      player.attrs.y += vy;
+      if (player.attrs.y < BASE_Y){
+        player.attrs.y = BASE_Y;
         vy = 0;
       }
     });
   })();
-  var enemy;
+//-------------------------------------
+//  enemy
+//-------------------------------------
+  var enemyRespawnController = createLevelController(BASE_Y);
   return {
     update: function(deltaRatio){
-      if (player.x % 1200 == 50){ 
-        if (enemy) enemy.destroy();
-        enemy = characterFoctory.create('images/characters/enemy.png', player.x + 1000, 80);
-      }
+      enemyRespawnController.update(player);
       _.each(characterFoctory.characters, function(character){
         character.update();
       });
     },
     render: function(canvas){
       var ctx = canvas.getContext("2d");
-      var viewX = player.x - 80;
+      var viewX = player.attrs.x - VIEWPORT_X;
       function drawImageWithXRepeat(ratio, path){
         imageCacher.ifloaded(path, function(image){
           var width = image.width * (canvas.height / image.height);
@@ -90,9 +99,9 @@ function MapScene(){
       drawImageWithXRepeat(0.1, 'images/background.jpg');
       drawImageWithXRepeat(1.0, 'images/ground.png');
       _.each(characterFoctory.characters, function(character){
-        imageCacher.ifloaded(character.path, function(image){
-          var x = character.x - viewX;
-          var y = canvas.height - character.y - image.height;
+        character.ifLoaded(function(image){
+          var x = character.attrs.x - viewX;
+          var y = canvas.height - character.attrs.y - image.height;
           var sx = character.getPattern() / character.maxPattern * image.width;
           var sy = 0;
           var width = image.width / character.maxPattern;
@@ -103,44 +112,6 @@ function MapScene(){
     }
   };
 }
-//-------------------------------------
-//  Character
-//-------------------------------------
-var characterFoctory = new function(){
-  var MAX_PATTERNS = {
-    "images/characters/wolf.png": 4,
-    "images/characters/enemy.png": 4
-  };
-  function getMaxPattern(path){ return MAX_PATTERNS[path] || 1; }
-  var characters = {}, counter = 0;
-  return {
-    characters: characters,
-    create: function(path, x, y, preUpdateFunc){
-      var cid = (counter += 1);
-      var pattern = 0, patternCounter = 0, patternAnimeSpeed = 12;
-      var character = {
-        x: x,
-        y: y,
-        path: path,
-        getPattern: function(){ return pattern; },
-        maxPattern: getMaxPattern(path),
-        update: function(){
-          if (preUpdateFunc) preUpdateFunc();
-          patternCounter += patternAnimeSpeed;
-          if (patternCounter > 100){
-            patternCounter -= 100;
-            pattern = (pattern + 1) % character.maxPattern;
-          }
-        },
-        destroy: function(){
-          delete characters[cid];
-        }
-      };
-      return characters[cid] = character;
-    }
-  }
-}
-
 
 
 
