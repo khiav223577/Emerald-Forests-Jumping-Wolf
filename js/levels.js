@@ -50,7 +50,7 @@ function createLevelController(BASE_Y){
         var x = level.position;
         _.each(level.emyAttrs, function(attr){
           ;(function(){
-            var offY = 0, dir = 1;
+            var animator = new SpringAnimator(0, 20, 0.3, 800, function(y){ character.attrs.y = y; });
             var character = characterFoctory.create(attr.path, {
               x: x, 
               y: BASE_Y, 
@@ -58,11 +58,15 @@ function createLevelController(BASE_Y){
               hp: attr.hp,
               atk: attr.atk
             }, function(thisObj){
-              if (offY > 40) dir = -1;
-              if (offY <  1) dir = 1;
-              offY += dir;
-              character.attrs.y = BASE_Y + offY;
+              animator.update();
             });
+            ;(function bounce(){
+              animator.setVal(BASE_Y + 40, function(){
+                animator.setVal(BASE_Y, function(){
+                  bounce();
+                });
+              });
+            })();
           })();
           x += 80 + Math.rand(50);
         });

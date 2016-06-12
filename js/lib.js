@@ -240,12 +240,16 @@ function SpringAnimator(defaultVal, updateSpan, zeta, time, onUpdate){
   var thisObj, epsilon = 0.01;
   var xv = {x: defaultVal, v: 0};
   var omega = 2 * Math.PI * updateSpan / time;
-  var animator = new AnimateManager();
+  var animaFunc;
   var delayCount = 0, delayedArguments = [];
   return thisObj = {
+    update: function(){
+      if (animaFunc == undefined) return;
+      if (animaFunc() == false) animaFunc = undefined;
+    },
     setVal: function(targetVal, onEnd){
       if (delayCount > 0){ delayedArguments.push(['setVal', arguments]); return thisObj; }
-      animator.start(function(){
+      animaFunc = function(){
         if (delayCount > 0){
           delayCount -= 1;
           if (delayCount == 0){
@@ -265,7 +269,7 @@ function SpringAnimator(defaultVal, updateSpan, zeta, time, onUpdate){
         }
         if (onUpdate) onUpdate(xv.x);
         return true;
-      }, updateSpan);
+      };
       return thisObj;
     },
     delay: function(time){
@@ -275,7 +279,6 @@ function SpringAnimator(defaultVal, updateSpan, zeta, time, onUpdate){
     },
     remove: function(onRemove){
       if (delayCount > 0){ delayedArguments.push(['remove', arguments]); return thisObj; }
-      animator.stop();
       if (onRemove) onRemove();
     }
   };
