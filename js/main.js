@@ -50,7 +50,12 @@ function MapScene(){
 //-------------------------------------
   var player = (function(){
     var vx = 0, vy = 0;
-    return characterFoctory.create('images/characters/wolf.png', {x: 0, y: BASE_Y}, function(){
+    return characterFoctory.create('images/characters/wolf.png', {
+      x: 0, 
+      y: BASE_Y,
+      hp: 100,
+      atk: 100
+    }, function(){
       if (Input.pressed(Input.KEYS.RIGHT)) vx = 6;
       else if (Input.pressed(Input.KEYS.LEFT)) vx = 3;
       else vx = 4;
@@ -70,14 +75,44 @@ function MapScene(){
 //  enemy
 //-------------------------------------
   var enemyRespawnController = new function(){
-    var nextEnemyRespawnAt = 50;
-    var enemy;
+    var levels = [], difficulty = 0;
     return {
       update: function(){
-        if (player.attrs.x > nextEnemyRespawnAt){ 
-          if (enemy) enemy.destroy();
-          enemy = characterFoctory.create('images/characters/monster-01.png', {x: player.attrs.x + 1000, y: BASE_Y, scale: 0.5});
-          nextEnemyRespawnAt = player.attrs.x + 1100 + Math.rand(200);
+        if (levels[0] == undefined){
+          (function(){
+            difficulty += 1;
+            switch(difficulty){
+            case 1: {
+              var emy1 = {hp: 100, atk: 100, path: 'images/characters/monster-01.png'};
+              levels.push({position: player.attrs.x + 1000, emyAttrs: [emy1]});
+              levels.push({position: player.attrs.x + 2000, emyAttrs: [emy1]});
+              levels.push({position: player.attrs.x + 3000, emyAttrs: [emy1]});
+              levels.push({position: player.attrs.x + 4000, emyAttrs: []});
+              break;}
+            case 2: {
+              levels.push({position: player.attrs.x + 1100, emyAttrs: [{hp: 100, atk: 100, path: 'images/characters/monster-01.png'}]});
+              break;}
+            case 3: {
+              levels.push({position: player.attrs.x + 1100, emyAttrs: [{hp: 100, atk: 100, path: 'images/characters/monster-01.png'}]});
+              break;}
+            default: {
+              levels.push({position: player.attrs.x + 1100, emyAttrs: [{hp: 100, atk: 100, path: 'images/characters/monster-01.png'}]});
+              break;}
+            }
+          })();
+        }
+        var level = levels[0];
+        if (level && level.position < player.attrs.x + 1000){
+          levels.shift();
+          _.each(level.emyAttrs, function(attr){
+            characterFoctory.create(attr.path, {
+              x: level.position, 
+              y: BASE_Y, 
+              scale: 0.5,
+              hp: attr.hp,
+              atk: attr.atk
+            });
+          });
         }
       }
     };
@@ -136,7 +171,16 @@ var characterFoctory = new function(){
     characters: characters,
     create: function(path, attrs, preUpdateFunc){
       var cid = (counter += 1);
+      var isDead = false;
       var pattern = 0, patternCounter = 0, patternAnimeSpeed = 12;
+      function dead(){
+        isDead = true;
+        //TODO 死亡動畫
+        destroy();
+      }
+      function destroy(){
+        delete characters[cid];
+      }
       var character = {
         attrs: attrs,
         ifLoaded: function(callback){
@@ -162,9 +206,10 @@ var characterFoctory = new function(){
             pattern = (pattern + 1) % character.maxPattern;
           }
         },
-        destroy: function(){
-          delete characters[cid];
-        }
+        damage: function(damage){
+          attrs.hp -= damage;
+          if (attrs.hp < 0 && isDead == false) dead();
+        },
       };
       return characters[cid] = character;
     }
