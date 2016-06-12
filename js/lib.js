@@ -48,6 +48,38 @@ var imageCacher = new function(){
     }
   };
 };
+function FilterableImage(image, width, height, sx, sy){
+  var thisObj;
+  var canvas = document.createElement('canvas');
+  var ctx = canvas.getContext('2d');
+  if (width == undefined) width = image.width;
+  if (height == undefined) height = image.height;
+  canvas.width = width;
+  canvas.height = height;
+  if (sx == undefined){
+    ctx.drawImage(image, 0, 0, width, height);
+  }else{
+    ctx.drawImage(image, sx, sy, width, height, 0, 0, width, height);
+  }
+  var imageData = ctx.getImageData( 0, 0, width, height);
+  var changeFlag = false;
+  return thisObj = {
+    applyFilter: function(filter){
+      changeFlag = true;
+      var args = [imageData.data];
+      for(var i = 1; i < arguments.length; ++i) args.push(arguments[i]);
+      filter.apply(this, args);
+      return thisObj;
+    },
+    getCanvas: function(){
+      if (changeFlag == true){
+        changeFlag = false;
+        ctx.putImageData(imageData, 0, 0);
+      }
+      return canvas;
+    }
+  };
+}
 //-------------------------------------
 //  requestAnimFrame
 //-------------------------------------

@@ -50,7 +50,7 @@ function MapScene(){
 //-------------------------------------
   var player = (function(){
     var vx = 0, vy = 0;
-    return characterFoctory.create('images/characters/wolf.png', 0, BASE_Y, function(){
+    return characterFoctory.create('images/characters/wolf.png', {x: 0, y: BASE_Y}, function(){
       if (Input.pressed(Input.KEYS.RIGHT)) vx = 6;
       else if (Input.pressed(Input.KEYS.LEFT)) vx = 3;
       else vx = 4;
@@ -76,7 +76,7 @@ function MapScene(){
       update: function(){
         if (player.x > nextEnemyRespawnAt){ 
           if (enemy) enemy.destroy();
-          enemy = characterFoctory.create('images/characters/enemy.png', player.x + 1000, BASE_Y);
+          enemy = characterFoctory.create('images/characters/monster-01.png', {x: player.x + 1000, y: BASE_Y, scale: 0.5});
           nextEnemyRespawnAt = player.x + 1100 + Math.rand(200);
         }
       }
@@ -106,7 +106,7 @@ function MapScene(){
       drawImageWithXRepeat(0.1, 'images/background.jpg');
       drawImageWithXRepeat(1.0, 'images/ground.png');
       _.each(characterFoctory.characters, function(character){
-        imageCacher.ifloaded(character.path, function(image){
+        character.ifLoaded(function(image){
           var x = character.x - viewX;
           var y = canvas.height - character.y - image.height;
           var sx = character.getPattern() / character.maxPattern * image.width;
@@ -125,19 +125,34 @@ function MapScene(){
 var characterFoctory = new function(){
   var MAX_PATTERNS = {
     "images/characters/wolf.png": 4,
-    "images/characters/enemy.png": 4
+    "images/characters/enemy.png": 4,
+    "images/characters/monster-01.png": 1,
+    "images/characters/monster-02.png": 1,
+    "images/characters/monster-03.png": 1
   };
   function getMaxPattern(path){ return MAX_PATTERNS[path] || 1; }
   var characters = {}, counter = 0;
   return {
     characters: characters,
-    create: function(path, x, y, preUpdateFunc){
+    create: function(path, attrs, preUpdateFunc){
       var cid = (counter += 1);
       var pattern = 0, patternCounter = 0, patternAnimeSpeed = 12;
       var character = {
-        x: x,
-        y: y,
-        path: path,
+        x: attrs.x,
+        y: attrs.y,
+        ifLoaded: function(callback){
+          imageCacher.ifloaded(path, function(image){
+            if (attrs.scale == undefined || attrs.scale == 1){
+              callback(image);  
+            }else{
+              callback(imageCacher.loadBy(path + '=> scaled', function(){ 
+                var width = Math.floor(image.width * attrs.scale);
+                var height = Math.floor(image.height * attrs.scale);
+                return (new FilterableImage(image, width, height).getCanvas()); 
+              }));
+            }
+          });
+        },
         getPattern: function(){ return pattern; },
         maxPattern: getMaxPattern(path),
         update: function(){
