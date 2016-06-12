@@ -34,11 +34,18 @@ var imageCacher = new function(){
         loadImage(url, callback);
       }
     },
-    ifloaded: function(url, callback){
+    ifloaded: function(url, callback, scale){
       var image = imageCache[url];
       if (image == undefined){
         thisObj.onload(url);
       }else if (onLoadCache[url] == undefined){
+        if (scale && scale != 1){
+          image = imageCacher.loadBy(url + '=> scaled: ' + scale.toFixed(2), function(){ 
+            var width = Math.floor(image.width * scale);
+            var height = Math.floor(image.height * scale);
+            return (new FilterableImage(image, width, height).getCanvas()); 
+          })
+        }
         callback(image);
       }
     },
@@ -147,21 +154,52 @@ $(function(){
   });
 });
 var sceneManager = new function(){
-  var scenes = [];
-  return {
-    goto: function(scene){
+  var thisObj, scenes = [];
+  return thisObj = {
+    push: function(scene){
+      scene.viewX = 0;
+      scene.characterFoctory = createCharacterFactory();
       scenes.unshift(scene);
+      scene.initialize();
     },
-    back: function(){
-      return scenes.shift();
+    goto: function(scene){
+      while(thisObj.pop() != undefined);
+      thisObj.push(scene);
+    },
+    pop: function(){
+      var scene = scenes.shift();
+      if (scene) scene.characterFoctory.destroy();
+      return scene;
     },
     update: function(){
       var scene = scenes[0];
-      if (scene) scene.update();
+      if (scene){
+        scene.update();
+        _.each(scene.characterFoctory.characters, function(character){
+          character.update();
+        });
+      } 
     },
     render: function(canvas){
       var scene = scenes[0];
-      if (scene) scene.render(canvas);
+      if (scene){
+        scene.render(canvas);
+        var ctx = canvas.getContext("2d");
+        _.each(scene.characterFoctory.characters, function(character){
+          character.ifLoaded(function(image){
+            var x = character.attrs.x - scene.viewX;
+            var y = canvas.height - character.attrs.y - image.height;
+            var sx = character.getPattern() / character.maxPattern * image.width;
+            var sy = 0;
+            var width = image.width / character.maxPattern;
+            var height = image.height;
+            ctx.drawImage(image, sx, sy, width, height, x, y, width, height);
+          });
+        });
+      }
+    },
+    getScene: function(){
+      return scenes[0];
     }
   };
 }
@@ -169,7 +207,8 @@ var sceneManager = new function(){
 //-------------------------------------
 //  Character
 //-------------------------------------
-var characterFoctory = new function(){
+function createCharacterFactory(){
+  function getMaxPattern(path){ return MAX_PATTERNS[path] || 1; } 
   var MAX_PATTERNS = {
     "images/characters/wolf.png": 4,
     "images/characters/enemy.png": 4,
@@ -177,53 +216,47 @@ var characterFoctory = new function(){
     "images/characters/monster-02.png": 1,
     "images/characters/monster-03.png": 1
   };
-  function getMaxPattern(path){ return MAX_PATTERNS[path] || 1; }
-  var characters = {}, counter = 0;
-  return {
-    characters: characters,
-    create: function(path, attrs, preUpdateFunc){
-      var cid = (counter += 1);
-      var isDead = false;
-      var pattern = 0, patternCounter = 0, patternAnimeSpeed = 12;
-      function dead(){
-        isDead = true;
-        //TODO 死亡動畫
-        destroy();
-      }
-      function destroy(){
-        delete characters[cid];
-      }
-      var character = {
-        attrs: attrs,
-        ifLoaded: function(callback){
-          imageCacher.ifloaded(path, function(image){
-            if (attrs.scale == undefined || attrs.scale == 1){
-              callback(image);  
-            }else{
-              callback(imageCacher.loadBy(path + '=> scaled', function(){ 
-                var width = Math.floor(image.width * attrs.scale);
-                var height = Math.floor(image.height * attrs.scale);
-                return (new FilterableImage(image, width, height).getCanvas()); 
-              }));
+  return new function(){
+    var characters = {}, counter = 0;
+    return {
+      characters: characters,
+      create: function(path, attrs, preUpdateFunc){
+        var cid = (counter += 1);
+        var isDead = new FlagObject(false), isDestroyed = new FlagObject(false);
+        var pattern = 0, patternCounter = 0, patternAnimeSpeed = 12;
+        var character = {
+          attrs: attrs,
+          ifLoaded: function(callback){
+            imageCacher.ifloaded(path, function(image){ callback(image); }, attrs.scale);
+          },
+          getPattern: function(){ return pattern; },
+          maxPattern: getMaxPattern(path),
+          update: function(){
+            if (preUpdateFunc) preUpdateFunc();
+            patternCounter += patternAnimeSpeed;
+            if (patternCounter > 100){
+              patternCounter -= 100;
+              pattern = (pattern + 1) % character.maxPattern;
             }
-          });
-        },
-        getPattern: function(){ return pattern; },
-        maxPattern: getMaxPattern(path),
-        update: function(){
-          if (preUpdateFunc) preUpdateFunc();
-          patternCounter += patternAnimeSpeed;
-          if (patternCounter > 100){
-            patternCounter -= 100;
-            pattern = (pattern + 1) % character.maxPattern;
+          },
+          damage: function(damage){
+            attrs.hp -= damage;
+            if (attrs.hp < 0 && isDead.changeTo(true) == true){
+              //TODO 死亡動畫
+              character.destroy();
+            }
+          },
+          destroy: function(){
+            if (isDestroyed.changeTo(true) == false) return;
+            delete characters[cid];
           }
-        },
-        damage: function(damage){
-          attrs.hp -= damage;
-          if (attrs.hp < 0 && isDead == false) dead();
-        },
-      };
-      return characters[cid] = character;
+        };
+        return characters[cid] = character;
+      },
+      destroy: function(){
+        _.each(characters, function(character){ character.destroy(); });
+        characters = undefined;
+      }
     }
   }
 }
@@ -285,4 +318,39 @@ function SpringAnimator(defaultVal, updateSpan, zeta, time, onUpdate){
     }
   };
 }
-
+function drawImageWithXRepeat(canvas, viewX, ratio, path){
+  var ctx = canvas.getContext("2d");
+  imageCacher.ifloaded(path, function(image){
+    var width = image.width * (canvas.height / image.height);
+    var dx = -(viewX * ratio) % width;
+    if (dx > 0) dx -= width;
+    while(dx < canvas.width){
+      ctx.drawImage(image, dx, 0, width, canvas.height);  
+      dx += width;
+    }
+  });
+}
+function FlagObject(flag){
+  var thisObj, prevFlag;
+  return thisObj = {
+    changeTo: function(newFlag){ //回傳flag有沒有變
+      if (newFlag == flag) return false;
+      prevFlag = flag;
+      flag = newFlag;
+      return true;
+    },
+    toggle: function(newFlag){
+      thisObj.changeTo(newFlag != undefined ? newFlag : !flag);
+      return thisObj.val();
+    },
+    is: function(checkFlag){
+      return (flag == checkFlag);
+    },
+    val: function(){
+      return flag;
+    },
+    prevVal: function(){
+      return prevFlag;
+    }
+  };
+}
