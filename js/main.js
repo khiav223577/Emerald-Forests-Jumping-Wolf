@@ -54,14 +54,14 @@ function MapScene(){
       if (Input.pressed(Input.KEYS.RIGHT)) vx = 6;
       else if (Input.pressed(Input.KEYS.LEFT)) vx = 3;
       else vx = 4;
-      if (Input.pressed(Input.KEYS.UP) && player.y == BASE_Y) vy = 15;
-      if (player.y > BASE_Y){
+      if (Input.pressed(Input.KEYS.UP) && player.attrs.y == BASE_Y) vy = 15;
+      if (player.attrs.y > BASE_Y){
         vy -= 1; //gravity
       }
-      player.x += vx;
-      player.y += vy;
-      if (player.y < BASE_Y){
-        player.y = BASE_Y;
+      player.attrs.x += vx;
+      player.attrs.y += vy;
+      if (player.attrs.y < BASE_Y){
+        player.attrs.y = BASE_Y;
         vy = 0;
       }
     });
@@ -74,10 +74,10 @@ function MapScene(){
     var enemy;
     return {
       update: function(){
-        if (player.x > nextEnemyRespawnAt){ 
+        if (player.attrs.x > nextEnemyRespawnAt){ 
           if (enemy) enemy.destroy();
-          enemy = characterFoctory.create('images/characters/monster-01.png', {x: player.x + 1000, y: BASE_Y, scale: 0.5});
-          nextEnemyRespawnAt = player.x + 1100 + Math.rand(200);
+          enemy = characterFoctory.create('images/characters/monster-01.png', {x: player.attrs.x + 1000, y: BASE_Y, scale: 0.5});
+          nextEnemyRespawnAt = player.attrs.x + 1100 + Math.rand(200);
         }
       }
     };
@@ -91,7 +91,7 @@ function MapScene(){
     },
     render: function(canvas){
       var ctx = canvas.getContext("2d");
-      var viewX = player.x - VIEWPORT_X;
+      var viewX = player.attrs.x - VIEWPORT_X;
       function drawImageWithXRepeat(ratio, path){
         imageCacher.ifloaded(path, function(image){
           var width = image.width * (canvas.height / image.height);
@@ -107,8 +107,8 @@ function MapScene(){
       drawImageWithXRepeat(1.0, 'images/ground.png');
       _.each(characterFoctory.characters, function(character){
         character.ifLoaded(function(image){
-          var x = character.x - viewX;
-          var y = canvas.height - character.y - image.height;
+          var x = character.attrs.x - viewX;
+          var y = canvas.height - character.attrs.y - image.height;
           var sx = character.getPattern() / character.maxPattern * image.width;
           var sy = 0;
           var width = image.width / character.maxPattern;
@@ -138,8 +138,7 @@ var characterFoctory = new function(){
       var cid = (counter += 1);
       var pattern = 0, patternCounter = 0, patternAnimeSpeed = 12;
       var character = {
-        x: attrs.x,
-        y: attrs.y,
+        attrs: attrs,
         ifLoaded: function(callback){
           imageCacher.ifloaded(path, function(image){
             if (attrs.scale == undefined || attrs.scale == 1){
