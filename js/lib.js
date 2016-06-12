@@ -157,10 +157,13 @@ var sceneManager = new function(){
   var scenes = [];
   return {
     goto: function(scene){
+      scene.characterFoctory = createCharacterFactory();
       scenes.unshift(scene);
+      scene.initialize();
     },
     back: function(){
-      return scenes.shift();
+      var scene = scenes.shift();
+      return scene;
     },
     update: function(){
       var scene = scenes[0];
@@ -169,6 +172,9 @@ var sceneManager = new function(){
     render: function(canvas){
       var scene = scenes[0];
       if (scene) scene.render(canvas);
+    },
+    getScene: function(){
+      return scenes[0];
     }
   };
 }
@@ -176,7 +182,8 @@ var sceneManager = new function(){
 //-------------------------------------
 //  Character
 //-------------------------------------
-var characterFoctory = new function(){
+function createCharacterFactory(){
+  function getMaxPattern(path){ return MAX_PATTERNS[path] || 1; } 
   var MAX_PATTERNS = {
     "images/characters/wolf.png": 4,
     "images/characters/enemy.png": 4,
@@ -184,43 +191,44 @@ var characterFoctory = new function(){
     "images/characters/monster-02.png": 1,
     "images/characters/monster-03.png": 1
   };
-  function getMaxPattern(path){ return MAX_PATTERNS[path] || 1; }
-  var characters = {}, counter = 0;
-  return {
-    characters: characters,
-    create: function(path, attrs, preUpdateFunc){
-      var cid = (counter += 1);
-      var isDead = false;
-      var pattern = 0, patternCounter = 0, patternAnimeSpeed = 12;
-      function dead(){
-        isDead = true;
-        //TODO 死亡動畫
-        destroy();
+  return new function(){
+    var characters = {}, counter = 0;
+    return {
+      characters: characters,
+      create: function(path, attrs, preUpdateFunc){
+        var cid = (counter += 1);
+        var isDead = false;
+        var pattern = 0, patternCounter = 0, patternAnimeSpeed = 12;
+        function dead(){
+          isDead = true;
+          //TODO 死亡動畫
+          destroy();
+        }
+        function destroy(){
+          delete characters[cid];
+        }
+        var character = {
+          attrs: attrs,
+          ifLoaded: function(callback){
+            imageCacher.ifloaded(path, function(image){ callback(image); }, attrs.scale);
+          },
+          getPattern: function(){ return pattern; },
+          maxPattern: getMaxPattern(path),
+          update: function(){
+            if (preUpdateFunc) preUpdateFunc();
+            patternCounter += patternAnimeSpeed;
+            if (patternCounter > 100){
+              patternCounter -= 100;
+              pattern = (pattern + 1) % character.maxPattern;
+            }
+          },
+          damage: function(damage){
+            attrs.hp -= damage;
+            if (attrs.hp < 0 && isDead == false) dead();
+          },
+        };
+        return characters[cid] = character;
       }
-      function destroy(){
-        delete characters[cid];
-      }
-      var character = {
-        attrs: attrs,
-        ifLoaded: function(callback){
-          imageCacher.ifloaded(path, function(image){ callback(image); }, attrs.scale);
-        },
-        getPattern: function(){ return pattern; },
-        maxPattern: getMaxPattern(path),
-        update: function(){
-          if (preUpdateFunc) preUpdateFunc();
-          patternCounter += patternAnimeSpeed;
-          if (patternCounter > 100){
-            patternCounter -= 100;
-            pattern = (pattern + 1) % character.maxPattern;
-          }
-        },
-        damage: function(damage){
-          attrs.hp -= damage;
-          if (attrs.hp < 0 && isDead == false) dead();
-        },
-      };
-      return characters[cid] = character;
     }
   }
 }

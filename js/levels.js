@@ -51,7 +51,7 @@ function createLevelController(BASE_Y){
         _.each(level.emyAttrs, function(attr){
           ;(function(){
             var animator = new SpringAnimator(BASE_Y, 20, 0.3, 1600, function(y){ character.attrs.y = y; });
-            var character = characterFoctory.create(attr.path, {
+            var character = sceneManager.getScene().characterFoctory.create(attr.path, {
               x: x, 
               y: BASE_Y, 
               scale: 0.5,

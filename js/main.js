@@ -42,6 +42,9 @@ $(function(){
 //-------------------------------------
 function MenuScene(){
   return {
+    initialize: function(){
+      
+    },
     update: function(deltaRatio){
       if (Input.pressed(Input.KEYS.ENTER)){
         //TODO sound && animation?
@@ -67,40 +70,37 @@ function MenuScene(){
 function MapScene(){
   var VIEWPORT_X = 90; //視角讓狼固定在的X位置
   var BASE_Y = 80;     //地面高度
-//-------------------------------------
-//  player
-//-------------------------------------
-  var player = (function(){
-    var vx = 0, vy = 0;
-    return characterFoctory.create('images/characters/wolf.png', {
-      x: VIEWPORT_X, 
-      y: BASE_Y,
-      hp: 100,
-      atk: 100
-    }, function(){
-      if (Input.pressed(Input.KEYS.RIGHT)) vx = 6;
-      else if (Input.pressed(Input.KEYS.LEFT)) vx = 3;
-      else vx = 4;
-      if (Input.pressed(Input.KEYS.UP) && player.attrs.y == BASE_Y) vy = 15;
-      if (player.attrs.y > BASE_Y){
-        vy -= 1; //gravity
-      }
-      player.attrs.x += vx;
-      player.attrs.y += vy;
-      if (player.attrs.y < BASE_Y){
-        player.attrs.y = BASE_Y;
-        vy = 0;
-      }
-    });
-  })();
-//-------------------------------------
-//  enemy
-//-------------------------------------
-  var enemyRespawnController = createLevelController(BASE_Y);
+  var player, enemyRespawnController;
   return {
+    initialize: function(){
+      player = (function(){
+        var vx = 0, vy = 0;
+        return sceneManager.getScene().characterFoctory.create('images/characters/wolf.png', {
+          x: VIEWPORT_X, 
+          y: BASE_Y,
+          hp: 100,
+          atk: 100
+        }, function(){
+          if (Input.pressed(Input.KEYS.RIGHT)) vx = 6;
+          else if (Input.pressed(Input.KEYS.LEFT)) vx = 3;
+          else vx = 4;
+          if (Input.pressed(Input.KEYS.UP) && player.attrs.y == BASE_Y) vy = 15;
+          if (player.attrs.y > BASE_Y){
+            vy -= 1; //gravity
+          }
+          player.attrs.x += vx;
+          player.attrs.y += vy;
+          if (player.attrs.y < BASE_Y){
+            player.attrs.y = BASE_Y;
+            vy = 0;
+          }
+        });
+      })();
+      enemyRespawnController = createLevelController(BASE_Y);
+    },
     update: function(deltaRatio){
       enemyRespawnController.update(player);
-      _.each(characterFoctory.characters, function(character){
+      _.each(sceneManager.getScene().characterFoctory.characters, function(character){
         character.update();
       });
     },
@@ -109,7 +109,7 @@ function MapScene(){
       var viewX = player.attrs.x - VIEWPORT_X;
       drawImageWithXRepeat(canvas, viewX, 0.1, 'images/background.jpg');
       drawImageWithXRepeat(canvas, viewX, 1.0, 'images/ground.png');
-      _.each(characterFoctory.characters, function(character){
+      _.each(sceneManager.getScene().characterFoctory.characters, function(character){
         character.ifLoaded(function(image){
           var x = character.attrs.x - viewX;
           var y = canvas.height - character.attrs.y - image.height;
