@@ -8,7 +8,7 @@ function bindResize($canvas){
     var width = $window.width();
     var height = $window.height();
     $canvas.css({
-      width: height * canvasRatio,
+      width: Math.floor(height * canvasRatio),
       height: height
     });
   }
@@ -73,7 +73,7 @@ function MapScene(){
   var player = (function(){
     var vx = 0, vy = 0;
     return characterFoctory.create('images/characters/wolf.png', {
-      x: 0, 
+      x: VIEWPORT_X, 
       y: BASE_Y,
       hp: 100,
       atk: 100
