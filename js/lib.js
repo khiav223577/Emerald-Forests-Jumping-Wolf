@@ -285,4 +285,16 @@ function SpringAnimator(defaultVal, updateSpan, zeta, time, onUpdate){
     }
   };
 }
+function drawImageWithXRepeat(canvas, viewX, ratio, path){
+  var ctx = canvas.getContext("2d");
+  imageCacher.ifloaded(path, function(image){
+    var width = image.width * (canvas.height / image.height);
+    var dx = -(viewX * ratio) % width;
+    if (dx > 0) dx -= width;
+    while(dx < canvas.width){
+      ctx.drawImage(image, dx, 0, width, canvas.height);  
+      dx += width;
+    }
+  });
+}
 

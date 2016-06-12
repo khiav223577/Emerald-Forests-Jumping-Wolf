@@ -103,19 +103,8 @@ function MapScene(){
     render: function(canvas){
       var ctx = canvas.getContext("2d");
       var viewX = player.attrs.x - VIEWPORT_X;
-      function drawImageWithXRepeat(ratio, path){
-        imageCacher.ifloaded(path, function(image){
-          var width = image.width * (canvas.height / image.height);
-          var dx = -(viewX * ratio) % width;
-          if (dx > 0) dx -= width;
-          while(dx < canvas.width){
-            ctx.drawImage(image, dx, 0, width, canvas.height);  
-            dx += width;
-          }
-        });
-      }
-      drawImageWithXRepeat(0.1, 'images/background.jpg');
-      drawImageWithXRepeat(1.0, 'images/ground.png');
+      drawImageWithXRepeat(canvas, viewX, 0.1, 'images/background.jpg');
+      drawImageWithXRepeat(canvas, viewX, 1.0, 'images/ground.png');
       _.each(characterFoctory.characters, function(character){
         character.ifLoaded(function(image){
           var x = character.attrs.x - viewX;
