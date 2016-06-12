@@ -266,8 +266,9 @@ function createCharacterFactory(){
 //-------------------------------------
 function createBulletFactory(characterFactory){
   return {
-    create: function(path, attrs){  //attrs = {x: ?, y: ?, atk: ?, hp: ?}
-      var character = characterFactory.create(path, attrs, function(){
+    create: function(path, attrs){  //attrs = {x: ?, y: ?, atk: ?, hp: ?, existTime: ?}
+      var character = characterFactory.create(path, attrs, function(){ //attrs = {x: ?, y: ?, atk: ?, hp: ?}
+        if ((attrs.existTime -= 1) < 0) return character.destroy(); //TODO 子彈消失動畫
         character.attrs.x += 10;
       });
       return character;

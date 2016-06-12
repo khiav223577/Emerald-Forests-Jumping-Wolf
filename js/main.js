@@ -83,6 +83,7 @@ function MapScene(){
         }, function(){
           function shoot(path){
             sceneManager.getScene().bulletFactory.create(path, {
+              existTime: 100,
               x: player.attrs.x,
               y: player.attrs.y,
               atk: player.attrs.atk,
