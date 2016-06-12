@@ -50,17 +50,14 @@ function MenuScene(){
     },
     render: function(canvas){
       var ctx = canvas.getContext("2d");
-      var image = drawImageWithXRepeat(canvas, 0, 0.1, 'images/background.jpg');
+      drawImageWithXRepeat(canvas, 0, 0.1, 'images/background.jpg');
       drawImageWithXRepeat(canvas, 0, 1.0, 'images/ground.png');
-      if (image != undefined){
-        var ratio = (canvas.height / image.height);
-        imageCacher.ifloaded('images/menu/title.png', function(image){
-          ctx.drawImage(image, (canvas.width - image.width) / 2, 120 - image.height / 2, image.width, image.height);  
-        }, ratio);
-        imageCacher.ifloaded('images/menu/jump.png', function(image){
-          ctx.drawImage(image, (canvas.width - image.width) / 2, 350 - image.height / 2, image.width, image.height);  
-        }, ratio);
-      }
+      imageCacher.ifloaded('images/menu/title.png', function(image){
+        ctx.drawImage(image, (canvas.width - image.width) / 2, 152 - image.height / 2, image.width, image.height);  
+      }, 0.48);
+      imageCacher.ifloaded('images/menu/jump.png', function(image){
+        ctx.drawImage(image, (canvas.width - image.width) / 2, 324 - image.height / 2, image.width, image.height);  
+      }, 0.242);
     }
   };
 }
