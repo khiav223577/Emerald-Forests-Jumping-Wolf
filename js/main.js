@@ -43,7 +43,7 @@ $(function(){
 function MenuScene(){
   return {
     initialize: function(){
-      sceneManager.getScene().characterFoctory.create('images/characters/wolf.png', {});
+      createMonsterType01(550, 80, {path: 'images/characters/monster-02.png'})
     },
     update: function(deltaRatio){
       if (Input.pressed(Input.KEYS.ENTER)){

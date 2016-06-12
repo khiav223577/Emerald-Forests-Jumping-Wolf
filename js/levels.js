@@ -49,29 +49,36 @@ function createLevelController(BASE_Y){
         levels.shift();
         var x = level.position;
         _.each(level.emyAttrs, function(attr){
-          ;(function(){
-            var animator = new SpringAnimator(BASE_Y, 20, 0.3, 1600, function(y){ character.attrs.y = y; });
-            var character = sceneManager.getScene().characterFoctory.create(attr.path, {
-              x: x, 
-              y: BASE_Y, 
-              scale: 0.5,
-              hp: attr.hp,
-              atk: attr.atk
-            }, function(thisObj){
-              animator.update();
-              if (character.attrs.x < player.attrs.x) character.damage(999999); //TODO damage player
-            });
-            ;(function bounce(){
-              animator.setVal(BASE_Y + 50 + Math.rand(20)).delay(30 + Math.rand(10), function(){
-                animator.setVal(BASE_Y + Math.rand(10)).delay(30 + Math.rand(10), function(){
-                  bounce();
-                });
-              });
-            })();
-          })();
+          createMonsterType01(x, BASE_Y, attr, function(character){
+            if (character.attrs.x < player.attrs.x) character.damage(999999); //TODO damage player
+          });
           x += 80 + Math.rand(50);
         });
       }
     }
   };
 }
+function createMonsterType01(x, BASE_Y, attr, onUpdate){
+  ;(function(){
+    var character, animator;
+    animator = new SpringAnimator(BASE_Y, 20, 0.3, 1600, function(y){ character.attrs.y = y; });
+    character = sceneManager.getScene().characterFoctory.create(attr.path, {
+      x: x, 
+      y: BASE_Y, 
+      scale: 0.5,
+      hp: attr.hp,
+      atk: attr.atk
+    }, function(){
+      animator.update();
+      if (onUpdate) onUpdate(character);
+    });
+    ;(function bounce(){
+      animator.setVal(BASE_Y + 50 + Math.rand(20)).delay(30 + Math.rand(10), function(){
+        animator.setVal(BASE_Y + Math.rand(10)).delay(30 + Math.rand(10), function(){
+          bounce();
+        });
+      });
+    })();
+  })();
+}
+
