@@ -14,31 +14,39 @@ function createSpriteFactory(){
       eachCharacter: function(callback){
         _.each(characters, function(character){ if (character) callback(character); }); //character may be destroyed in this loop
       },
-      create: function(path, options){ //options = {attrs: ?, callbacks: ?}; attrs = {x: ?, y: ?, scale: ?, patternSpeed: 12}
+      create: function(_path, options){ //options = {attrs: ?, callbacks: ?}; attrs = {x: ?, y: ?, scale: ?, patternSpeed: 12}
         var cid = (counter += 1);
         var isDestroyed = new FlagObject(false);
-        var pattern = 0, patternCounter = 0;
+        var path, pattern, patternCounter = 0;
         var attrs = options.attrs;
         var callbacks = options.callbacks || {};
         var character = {
           attrs: attrs,
+          setPath: function(_path){
+            path = _path;
+            character.image = undefined;
+            pattern = 0;
+            character.maxPattern = getMaxPattern(path);
+            imageCacher.onload(path, function(image){ character.image = image; }, attrs.scale);
+          },
           getOx: function(){ return callbacks.getOx(character.image.width / character.maxPattern); },
           getOy: function(){ return callbacks.getOy(character.image.height); },
           ifLoaded: function(callback){
             imageCacher.ifloaded(path, function(image){ callback(image); }, attrs.scale);
           },
           getPattern: function(){ return pattern; },
-          maxPattern: getMaxPattern(path),
           update: function(){
             if (callbacks.onUpdate) callbacks.onUpdate();
-            patternCounter += attrs.patternSpeed;
-            if (patternCounter > 100){
-              patternCounter -= 100;
-              pattern += 1;
-              if (pattern >= character.maxPattern){
-                if (attrs.loopPattern) pattern = 0;
-                else character.destroy();
-              } 
+            if (character.maxPattern){
+              patternCounter += attrs.patternSpeed;
+              if (patternCounter > 100){
+                patternCounter -= 100;
+                pattern += 1;
+                if (pattern >= character.maxPattern){
+                  if (attrs.loopPattern) pattern = 0;
+                  else character.destroy();
+                } 
+              }  
             }
           },
           destroy: function(){
@@ -47,7 +55,7 @@ function createSpriteFactory(){
             delete characters[cid];
           }
         };
-        imageCacher.onload(path, function(image){ character.image = image; }, attrs.scale);
+        character.setPath(_path);
         return characters[cid] = character;
       },
       destroy: function(){
