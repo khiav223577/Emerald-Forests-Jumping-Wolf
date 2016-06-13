@@ -188,13 +188,16 @@ var sceneManager = new function(){
         var ctx = canvas.getContext("2d");
         _.each(scene.spriteFactory.characters, function(character){
           character.ifLoaded(function(image){
-            var x = character.attrs.x - scene.viewX;
-            var y = canvas.height - character.attrs.y - image.height;
-            var sx = character.getPattern() / character.maxPattern * image.width;
-            var sy = 0;
             var width = image.width / character.maxPattern;
             var height = image.height;
+            var x = character.attrs.x - scene.viewX + width / 2;
+            var y = canvas.height - character.attrs.y - height;
+            var sx = character.getPattern() / character.maxPattern * image.width;
+            var sy = 0;
             ctx.drawImage(image, sx, sy, width, height, x, y, width, height);
+            // ctx.beginPath();
+            // ctx.arc(x + width / 2,y + height / 2,30,0,2*Math.PI);
+            // ctx.stroke();
           });
         });
       }
