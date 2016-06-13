@@ -328,3 +328,26 @@ function LinearPerRatioModel(minRatio, perX){
     }
   };
 }
+window.AudioContext = window.AudioContext || window.webkitAudioContext;
+navigator.getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia;
+function createRecorder(fftSize){
+  if (fftSize == undefined) fftSize = 2048;
+  var analyser, dataArray = new Uint8Array(fftSize);
+  var context = new AudioContext();
+  navigator.getUserMedia({audio: true}, function(stream){
+    var microphone = context.createMediaStreamSource(stream);
+    analyser = context.createAnalyser();
+    analyser.fftSize = fftSize;
+    microphone.connect(analyser);
+    // analyser.connect(context.destination);
+  }, function(){
+    console.log('error');
+  });  
+  return {
+    getData: function(){
+      if (analyser == undefined) return;
+      analyser.getByteFrequencyData(dataArray);
+      return dataArray;
+    }
+  }
+}
