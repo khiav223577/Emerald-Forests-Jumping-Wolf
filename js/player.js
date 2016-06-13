@@ -38,7 +38,7 @@ function createPlayer(VIEWPORT_X, BASE_Y){
     var animator;
     return {
     	initialize: function(){
-				animator = new SpringAnimator(6, 20, 0.6, 1600, function(y){ vy = y; console.log(vy)});
+				animator = new SpringAnimator(6, 20, 0.6, 1600, function(y){ vy = y; });
 				animator.setVal(-6);
     	},
       updateInput: function(){
@@ -47,7 +47,11 @@ function createPlayer(VIEWPORT_X, BASE_Y){
         if (Input.pressed(Input.KEYS.D)) shoot('images/characters/magic_ball-03.png');
       },
       update: function(){
-      	animator.update();
+      	if (player.attrs.y > BASE_Y) animator.update();
+      	else{
+      		animator = undefined;
+      		changeStatus(STATUSES.IDLE);
+      	}
       }
     };
   };
