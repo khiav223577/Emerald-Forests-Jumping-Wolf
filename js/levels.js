@@ -59,7 +59,7 @@ function createLevelController(BASE_Y){
   };
 }
 function createMonsterType01(x, BASE_Y, attr, onUpdate){
-  ;(function(){
+  return (function(){
     var character, animator;
     animator = new SpringAnimator(BASE_Y, 20, 0.3, 1600, function(y){ character.attrs.y = y; });
     character = sceneManager.getScene().characterFactory.create(attr.path, {
@@ -83,6 +83,7 @@ function createMonsterType01(x, BASE_Y, attr, onUpdate){
         });
       });
     })();
+    return character;
   })();
 }
 

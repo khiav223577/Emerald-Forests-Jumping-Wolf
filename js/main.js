@@ -41,20 +41,36 @@ $(function(){
 //  MenuScene
 //-------------------------------------
 function MenuScene(){
+  var character;
+  var cd = 0;
   return {
     initialize: function(){
-      createMonsterType01(550, 80, {path: 'images/characters/monster-02.png'})
+      character = createMonsterType01(650, 80, {path: 'images/characters/monster-02.png'})
     },
     update: function(deltaRatio){
       if (Input.pressed(Input.KEYS.ENTER)){
         //TODO sound && animation?
         sceneManager.goto(new MapScene());
       } 
+      if (cd > 0) return (cd -= 1);
+      if (Math.rand(20) == 1){
+        cd = 10;
+        var offX = -650;
+        var offY = Math.randBetween(-60, 60);
+        character.attrs.x += offX;
+        character.attrs.y += offY
+        character.shoot('images/characters/magic_ball-0' + String(Math.rand(3) + 1) + '.png');
+        character.attrs.x -= offX;
+        character.attrs.y -= offY;
+      } 
     },
-    render: function(canvas){
+    render1: function(canvas){
       var ctx = canvas.getContext("2d");
       drawImageWithXRepeat(canvas, 0, 0.1, 'images/background.jpg');
       drawImageWithXRepeat(canvas, 0, 1.0, 'images/ground.png');
+    },
+    render2: function(canvas){
+      var ctx = canvas.getContext("2d");
       imageCacher.ifloaded('images/menu/title.png', function(image){
         ctx.drawImage(image, (canvas.width - image.width) / 2, 152 - image.height / 2, image.width, image.height);  
       }, 0.48);
@@ -79,11 +95,14 @@ function MapScene(){
     update: function(deltaRatio){
       enemyRespawnController.update(player);
     },
-    render: function(canvas){
+    render1: function(canvas){
       var ctx = canvas.getContext("2d");
       var viewX = sceneManager.getScene().viewX = player.attrs.x - VIEWPORT_X;
       drawImageWithXRepeat(canvas, viewX, 0.1, 'images/background.jpg');
       drawImageWithXRepeat(canvas, viewX, 1.0, 'images/ground.png');
+    },
+    render2: function(canvas){
+
     }
   };
 }

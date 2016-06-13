@@ -1,6 +1,9 @@
 Math.rand = function(value){
   return Math.floor(Math.random() * value);
 };
+Math.randBetween = function(x1, x2){
+  return Math.rand(x2 - x1 + 1) + x1;
+}
 var imageCacher = new function(){
   var onLoadCache = {}, imageCache = {};
   var thisObj;
@@ -184,13 +187,13 @@ var sceneManager = new function(){
     render: function(canvas){
       var scene = scenes[0];
       if (scene){
-        scene.render(canvas);
+        scene.render1(canvas);
         var ctx = canvas.getContext("2d");
         _.each(scene.spriteFactory.characters, function(character){
           character.ifLoaded(function(image){
             var width = image.width / character.maxPattern;
             var height = image.height;
-            var x = character.attrs.x - scene.viewX + width / 2;
+            var x = character.attrs.x - scene.viewX - width / 2;
             var y = canvas.height - character.attrs.y - height;
             var sx = character.getPattern() / character.maxPattern * image.width;
             var sy = 0;
@@ -199,6 +202,7 @@ var sceneManager = new function(){
             // ctx.beginPath(); ctx.arc(x + width / 2,y + height / 2, rge, 0, 2 * Math.PI); ctx.stroke();
           });
         });
+        scene.render2(canvas);
       }
     },
     getScene: function(){
