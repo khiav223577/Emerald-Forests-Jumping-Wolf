@@ -193,7 +193,8 @@ var sceneManager = new function(){
         scene.spriteFactory.eachCharacter(function(character){
           var image = character.image;
           if (image == undefined) return;
-          var width = image.width / character.maxPattern;
+          var ratio = (character.attrs.ratio == undefined ? 1 : character.attrs.ratio);
+          var width = image.width / character.maxPattern * ratio;
           var height = image.height;
           var x = character.attrs.x - character.getOx();
           if (!character.attrs.fixedPosition) x -= scene.viewX;

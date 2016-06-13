@@ -1,7 +1,7 @@
 function createPPBar(x, y, min, max, val){
   if (val == undefined) val = min;
   var blood = sceneManager.getScene().spriteFactory.create('images/bar/blood.png', {
-    attrs: {x: x + 6, y: y - 3, scale: 1, patternSpeed: 0, loopPattern: true, fixedPosition: true },
+    attrs: {x: x + 6, y: y - 3, scale: 1, patternSpeed: 0, loopPattern: true, fixedPosition: true, ratio: 0.5 },
     callbacks: {
       getOx: function(s){ return 0; },
       getOy: function(s){ return 0; },
