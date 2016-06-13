@@ -40,6 +40,7 @@ function createPlayer(VIEWPORT_X, BASE_Y){
     	initialize: function(){
 				animator = new SpringAnimator(6, 20, 0.6, 1600, function(y){ vy = y; });
 				animator.setVal(-6);
+				animator.update();
     	},
       updateInput: function(){
         if (Input.pressed(Input.KEYS.A)) shoot('images/characters/magic_ball-01.png');
