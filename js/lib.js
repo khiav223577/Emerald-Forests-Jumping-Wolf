@@ -344,6 +344,9 @@ function createRecorder(fftSize){
     console.log('error');
   });  
   return {
+    isReady: function(){
+      return (analyser != undefined);
+    },
     getData: function(){
       if (analyser == undefined) return;
       analyser.getByteFrequencyData(dataArray);
