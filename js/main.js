@@ -48,7 +48,7 @@ function MenuScene(){
       character = createMonsterType01(650, 80, {path: 'images/characters/monster-02.png'})
     },
     update: function(deltaRatio){
-      if (Input.pressed(Input.KEYS.ENTER)){
+      if (Input.triggered(Input.KEYS.ENTER)){
         //TODO sound && animation?
         sceneManager.goto(new MapScene());
       } 
@@ -88,14 +88,15 @@ function MapScene(){
   var BASE_Y = 80;     //地面高度
   var score = 0;
   var thisObj, player, enemyRespawnController;
+  var gameover = false;
   return thisObj = {
     initialize: function(){
       player = createPlayer(VIEWPORT_X, BASE_Y, {
         onKilled: function(){
-
+          //TODO pause
         },
         onDestroy: function(){
-
+          gameover = true;
         }
       });
       enemyRespawnController = createLevelController(BASE_Y);
@@ -104,6 +105,10 @@ function MapScene(){
       };
     },
     update: function(deltaRatio){
+      if (gameover){
+        if (Input.triggered(Input.KEYS.ENTER)) sceneManager.goto(new MenuScene());
+        return;
+      }
       enemyRespawnController.update(player);
     },
     render1: function(canvas){
@@ -116,6 +121,9 @@ function MapScene(){
       var ctx = canvas.getContext("2d");
       ctx.font = "30px Arial";
       ctx.fillText("Score: " + score, 10, 50);
+      if (gameover){
+        
+      }
     }
   };
 }
