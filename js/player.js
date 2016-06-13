@@ -11,25 +11,7 @@ function createPlayer(VIEWPORT_X, BASE_Y, callbacks){
 
       },
       updateInput: function(character){
-        if (Input.pressed(Input.KEYS.SPACE)){ 
-          sceneManager.getScene().spriteFactory.create('images/characters/sing_effect.png', {
-            attrs: {
-              x: player.attrs.x,
-              y: player.attrs.y,
-              scale: 2,
-              loopPattern: false,
-              patternSpeed: 50  
-            },
-            callbacks: {
-              getOx: function(s){ return s / 2; },
-              getOy: function(s){ return s / 2; },
-              onUpdate: function(){
-                
-              }
-            }
-          });
-          return changeStatus(STATUSES.SING);
-        }
+        if (Input.pressed(Input.KEYS.SPACE)) return changeStatus(STATUSES.SING);
         if (Input.pressed(Input.KEYS.RIGHT)) vx = 6;
         else if (Input.pressed(Input.KEYS.LEFT)) vx = 3;
         else vx = 4;
@@ -41,13 +23,27 @@ function createPlayer(VIEWPORT_X, BASE_Y, callbacks){
     };
   };
   STATUSES.SING = new function(){
-    var minVy = -2;
-    var animator;
+    var singCounter;
     return {
       initialize: function(){
-        animator = new SpringAnimator(6, 20, 0.6, 1600, function(y){ vy = y; });
-        animator.setVal(-6);
-        animator.update();
+        singCounter = 30;
+        sceneManager.getScene().spriteFactory.create('images/characters/sing_effect.png', {
+          attrs: {
+            x: player.attrs.x,
+            y: player.attrs.y,
+            scale: 2,
+            loopPattern: false,
+            patternSpeed: 50  
+          },
+          callbacks: {
+            getOx: function(s){ return s / 2; },
+            getOy: function(s){ return s / 2; },
+            onUpdate: function(){
+
+            }
+          }
+        });
+        vy = 6;
       },
       updateInput: function(character){
         if (Input.pressed(Input.KEYS.A)){ character.shoot('images/characters/magic_ball-01.png'); changeStatus(STATUSES.IDLE); }
@@ -55,11 +51,8 @@ function createPlayer(VIEWPORT_X, BASE_Y, callbacks){
         if (Input.pressed(Input.KEYS.D)){ character.shoot('images/characters/magic_ball-03.png'); changeStatus(STATUSES.IDLE); }
       },
       update: function(character){
-        if (character.attrs.y > BASE_Y) animator.update();
-        else{
-          animator = undefined;
-          changeStatus(STATUSES.IDLE);
-        }
+        if ((singCounter -= 1) < 0) return changeStatus(STATUSES.IDLE);
+        vy *= 0.9;
       }
     };
   };
