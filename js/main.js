@@ -43,7 +43,7 @@ $(function(){
 function MenuScene(){
   return {
     initialize: function(){
-      createMonsterType01(550, 80, {path: 'images/characters/monster-02.png'})
+      createMonsterType01(450, 80, {path: 'images/characters/monster-02.png'})
     },
     update: function(deltaRatio){
       if (Input.pressed(Input.KEYS.ENTER)){
