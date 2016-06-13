@@ -193,9 +193,11 @@ var sceneManager = new function(){
         scene.spriteFactory.eachCharacter(function(character){
           var image = character.image;
           if (image == undefined) return;
-          var width = image.width / character.maxPattern;
+          var ratio = (character.attrs.ratio == undefined ? 1 : character.attrs.ratio);
+          var width = image.width / character.maxPattern * ratio;
           var height = image.height;
-          var x = character.attrs.x - scene.viewX - character.getOx();
+          var x = character.attrs.x - character.getOx();
+          if (!character.attrs.fixedPosition) x -= scene.viewX;
           var y = canvas.height - character.attrs.y - character.getOy();
           var sx = character.getPattern() / character.maxPattern * image.width;
           var sy = 0;
@@ -302,6 +304,27 @@ function FlagObject(flag){
     },
     prevVal: function(){
       return prevFlag;
+    }
+  };
+}
+function LinearPerRatioModel(minRatio, perX){
+  var start, target, epsilon = 0.01;
+  return {
+    setStartAttrs: function(_current, _target){
+      if (target == _target) return;
+      target = _target;
+      start = _current;
+    },
+    getNextValue: function(current){
+    //start    current             target
+    //|-----------|------------------|
+      var max = target - start + 0.0;
+      var val = target - current;
+      if (max == 0) return target;
+      var per = val / max;
+      var change = val * (minRatio + (1 - per) / perX);
+      if (Math.abs(change) < epsilon) return current;
+      return current + change;
     }
   };
 }
