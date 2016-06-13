@@ -1,7 +1,7 @@
 var assetsManager = new function(){
   var MAX_PATTERNS = {
     "images/bar/blood.png": 1,
-    "images/bar/outlayer.png": 1,
+    "images/bar/inlayer.png": 1,
     "images/characters/wolf.png": 2,
     "images/characters/wolf_jump.png": 1,
     "images/characters/wolf_stand.png": 1,

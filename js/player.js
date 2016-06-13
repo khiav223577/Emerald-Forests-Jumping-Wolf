@@ -1,29 +1,15 @@
-function LinearPerRatioModel(minRatio, perX){
-  var start, target, epsilon = 0.01;
-  return {
-    setStartAttrs: function(_current, _target){
-      if (target == _target) return;
-      target = _target;
-      start = _current;
-    },
-    getNextValue: function(current){
-    //start    current             target
-    //|-----------|------------------|
-      var max = target - start + 0.0;
-      var val = target - current;
-      if (max == 0) return target;
-      var per = val / max;
-      var change = val * (minRatio + (1 - per) / perX);
-      if (Math.abs(change) < epsilon) return current;
-      return current + change;
-    }
-  };
-}
-
 function createPPBar(x, y, min, max, currentVal){
   var targetVal, animator = new LinearPerRatioModel(0.1, 4);
+  var inlayer = sceneManager.getScene().spriteFactory.create('images/bar/inlayer.png', {
+    attrs: {x: x, y: y, scale: 1, patternSpeed: 0, loopPattern: true, fixedPosition: true },
+    callbacks: {
+      getOx: function(s){ return 0; },
+      getOy: function(s){ return 0; },
+      onUpdate: function(){}
+    }
+  });
   var blood = sceneManager.getScene().spriteFactory.create('images/bar/blood.png', {
-    attrs: {x: x + 6, y: y - 3, scale: 1, patternSpeed: 0, loopPattern: true, fixedPosition: true },
+    attrs: {x: x, y: y, scale: 1, patternSpeed: 0, loopPattern: true, fixedPosition: true },
     callbacks: {
       getOx: function(s){ return 0; },
       getOy: function(s){ return 0; },
@@ -31,14 +17,6 @@ function createPPBar(x, y, min, max, currentVal){
         if (currentVal == targetVal) return;
         setCurrentVal(animator.getNextValue(currentVal));
       }
-    }
-  });
-  var outlayer = sceneManager.getScene().spriteFactory.create('images/bar/outlayer.png', {
-    attrs: {x: x, y: y, scale: 1, patternSpeed: 0, loopPattern: true, fixedPosition: true },
-    callbacks: {
-      getOx: function(s){ return 0; },
-      getOy: function(s){ return 0; },
-      onUpdate: function(){}
     }
   });
   function setValue(val){
@@ -57,9 +35,9 @@ function createPPBar(x, y, min, max, currentVal){
     getCurrentValue: function(){ return currentVal; },
     destroy: function(){
       blood.destroy();
-      outlayer.destroy();
+      inlayer.destroy();
       blood = undefined;
-      outlayer = undefined;
+      inlayer = undefined;
     }
   }
 }
@@ -128,16 +106,16 @@ function createPlayer(VIEWPORT_X, BASE_Y, callbacks){
         vy = 6;
       },
       updateInput: function(character){
-        if (Input.pressed(Input.KEYS.A)){ ppbar.setValue(45); }
-        if (Input.pressed(Input.KEYS.S)){ ppbar.setValue(55); }
-        if (Input.pressed(Input.KEYS.D)){ ppbar.setValue(65); }
+        if (Input.pressed(Input.KEYS.A)){ ppbar.setValue(35); }
+        if (Input.pressed(Input.KEYS.S)){ ppbar.setValue(45); }
+        if (Input.pressed(Input.KEYS.D)){ ppbar.setValue(55); }
       },
       update: function(character){
         if ((singCounter -= 1) < 0){
           var val = ppbar.getCurrentValue();
-          if (val >= 40 && val < 50) character.shoot('images/characters/magic_ball-01.png', 'water' );
-          if (val >= 50 && val < 60) character.shoot('images/characters/magic_ball-02.png', 'fire'  );
-          if (val >= 60 && val < 70) character.shoot('images/characters/magic_ball-03.png', 'ground');
+          if (val >= 30 && val < 40) character.shoot('images/characters/magic_ball-01.png', 'water' );
+          if (val >= 40 && val < 50) character.shoot('images/characters/magic_ball-02.png', 'fire'  );
+          if (val >= 50 && val < 60) character.shoot('images/characters/magic_ball-03.png', 'ground');
           return changeStatus(STATUSES.IDLE);
         }
         vy *= 0.9;
