@@ -24,7 +24,10 @@ function createPlayer(VIEWPORT_X, BASE_Y, callbacks){
         if (Input.pressed(Input.KEYS.RIGHT)) vx = 6;
         else if (Input.pressed(Input.KEYS.LEFT)) vx = 3;
         else vx = 4;
-        if (Input.pressed(Input.KEYS.UP) && character.attrs.y == BASE_Y) vy = 15;
+        if (Input.pressed(Input.KEYS.UP) && character.attrs.y == BASE_Y){
+          player.setPath(JUMP_PATH);
+          vy = 15;
+        } 
       },
       update: function(character){
         if (character.attrs.y > BASE_Y) vy -= 1; //gravity
@@ -96,6 +99,7 @@ function createPlayer(VIEWPORT_X, BASE_Y, callbacks){
         if (player.attrs.y < BASE_Y){
           player.attrs.y = BASE_Y;
           vy = 0;
+          player.setPath(IDLE_PATH);
         }
       }
     }
