@@ -27,11 +27,11 @@ function createPlayer(VIEWPORT_X, BASE_Y, callbacks){
     return {
       initialize: function(){
         singCounter = 30;
-        sceneManager.getScene().spriteFactory.create('images/characters/sing_effect.png', {
+        var singEffect = sceneManager.getScene().spriteFactory.create('images/characters/sing_effect.png', {
           attrs: {
-            x: player.attrs.x,
-            y: player.attrs.y,
-            scale: 2,
+            x: 0,
+            y: 0,
+            scale: 4,
             loopPattern: false,
             patternSpeed: 50  
           },
@@ -39,7 +39,8 @@ function createPlayer(VIEWPORT_X, BASE_Y, callbacks){
             getOx: function(s){ return s / 2; },
             getOy: function(s){ return s / 2; },
             onUpdate: function(){
-
+              singEffect.attrs.x = player.attrs.x;
+              singEffect.attrs.y = player.attrs.y + 20;
             }
           }
         });
