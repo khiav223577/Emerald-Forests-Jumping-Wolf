@@ -66,7 +66,7 @@ function createCharacterFactory(spriteFactory){
               existTime: 100,
               speed: 20,
               race: character.attrs.character.race,
-              hitRange: 30
+              hitRange: 50
             },
             x: character.attrs.x,
             y: character.attrs.y,
