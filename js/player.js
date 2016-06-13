@@ -50,7 +50,8 @@ function createPlayer(VIEWPORT_X, BASE_Y){
     character: {
       race: 1,
       hp: 100,
-      atk: 100 
+      atk: 100,
+      hitRange: 3 //not using
     },
     x: VIEWPORT_X, 
     y: BASE_Y,

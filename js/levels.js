@@ -66,7 +66,8 @@ function createMonsterType01(x, BASE_Y, attr, onUpdate){
       character: {
         race: 2,
         hp: attr.hp,
-        atk: attr.atk  
+        atk: attr.atk,
+        hitRange: 30
       },
       x: x, 
       y: BASE_Y, 
