@@ -41,6 +41,8 @@ $(function(){
 //-------------------------------------
 //  MenuScene
 //-------------------------------------
+var VIEWPORT_X = 100; //視角讓狼固定在的X位置
+var BASE_Y = 80;     //地面高度
 function MenuScene(){
   var player, character;
   var cd = 0;
@@ -49,8 +51,8 @@ function MenuScene(){
       player = sceneManager.getScene().characterFactory.create('images/characters/wolf_stand.png', {
         attrs: {
           character: { race: 1, hp: 1, atk: 0, hitRange: 30 },
-          x: 90, 
-          y: 80, 
+          x: VIEWPORT_X, 
+          y: BASE_Y, 
           scale: 0.5,
           loopPattern: true,
           patternSpeed: 12
@@ -61,7 +63,7 @@ function MenuScene(){
           onUpdate: function(){}
         }
       });
-      character = createMonsterType01(650, 80, {path: 'images/characters/monster-02.png'})
+      character = createMonsterType01(650, BASE_Y, {path: 'images/characters/monster-02.png'})
     },
     update: function(deltaRatio){
       if (Input.triggered(Input.KEYS.ENTER)){
@@ -100,8 +102,6 @@ function MenuScene(){
 //  MapScene
 //-------------------------------------
 function MapScene(){
-  var VIEWPORT_X = 100; //視角讓狼固定在的X位置
-  var BASE_Y = 80;     //地面高度
   var score = 0;
   var thisObj, player, enemyRespawnController;
   var gameover = false;
