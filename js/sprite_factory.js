@@ -47,6 +47,7 @@ function createSpriteFactory(){
             delete characters[cid];
           }
         };
+        imageCacher.onload(path, function(image){ character.image = image; });
         return characters[cid] = character;
       },
       destroy: function(){
@@ -93,7 +94,7 @@ function createCharacterFactory(spriteFactory){
               getOx: function(s){ return s / 2; },
               getOy: function(s){ return s; },
               onUpdate: function(){
-                
+
               }
             }
           });

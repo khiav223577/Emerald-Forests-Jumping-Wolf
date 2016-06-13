@@ -199,7 +199,7 @@ var sceneManager = new function(){
             var sy = 0;
             ctx.drawImage(image, sx, sy, width, height, x, y, width, height);
             // var rge = (character.attrs.character || character.attrs.bullet || {}).hitRange || 10; //show hit range
-            // ctx.beginPath(); ctx.arc(x + width / 2,y + height / 2, rge, 0, 2 * Math.PI); ctx.stroke();
+            // ctx.beginPath(); ctx.arc(x + character.getOx(width),y + character.getOy(height), rge, 0, 2 * Math.PI); ctx.stroke();
           });
         });
         scene.render2(canvas);

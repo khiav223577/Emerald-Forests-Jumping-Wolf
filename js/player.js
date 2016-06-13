@@ -77,8 +77,10 @@ function createPlayer(VIEWPORT_X, BASE_Y, callbacks){
       getOx: function(s){ return s / 2; },
       getOy: function(s){ return s; },
       onUpdate: function(){
-        currentStatus.updateInput(player);
-        currentStatus.update(player);
+        if (player.image){ //allow control after image loaded
+          currentStatus.updateInput(player);
+          currentStatus.update(player);  
+        }
         player.attrs.x += vx;
         player.attrs.y += vy;
         if (player.attrs.y < BASE_Y){
