@@ -75,6 +75,11 @@ function MapScene(){
     initialize: function(){
       player = (function(){
         var vx = 0, vy = 0;
+        var STATUSES = {
+          IDLE: 1,
+          SING: 2,
+        }
+        var currentStatus = STATUSES.IDLE;
         return sceneManager.getScene().characterFactory.create('images/characters/wolf.png', {
           x: VIEWPORT_X, 
           y: BASE_Y,
@@ -82,6 +87,7 @@ function MapScene(){
           atk: 100
         }, function(){
           function shoot(path){
+            currentStatus = STATUSES.IDLE;
             sceneManager.getScene().bulletFactory.create(path, {
               existTime: 100,
               speed: 20,
@@ -91,13 +97,9 @@ function MapScene(){
               hp: 1
             });
           }
-          if (Input.pressed(Input.KEYS.A)) shoot('images/characters/magic_ball-01.png');
-          if (Input.pressed(Input.KEYS.S)) shoot('images/characters/magic_ball-02.png');
-          if (Input.pressed(Input.KEYS.D)) shoot('images/characters/magic_ball-03.png');
           if (Input.pressed(Input.KEYS.RIGHT)) vx = 6;
           else if (Input.pressed(Input.KEYS.LEFT)) vx = 3;
           else vx = 4;
-          if (Input.pressed(Input.KEYS.UP) && player.attrs.y == BASE_Y) vy = 15;
           if (player.attrs.y > BASE_Y){
             vy -= 1; //gravity
           }
@@ -106,6 +108,17 @@ function MapScene(){
           if (player.attrs.y < BASE_Y){
             player.attrs.y = BASE_Y;
             vy = 0;
+          }
+          switch(currentStatus){
+          case STATUSES.IDLE:{
+            if (Input.pressed(Input.KEYS.SPACE)) return currentStatus = STATUSES.SING;
+            if (Input.pressed(Input.KEYS.UP) && player.attrs.y == BASE_Y) vy = 15;
+            break;}
+          case STATUSES.SING:{
+            if (Input.pressed(Input.KEYS.A)) shoot('images/characters/magic_ball-01.png');
+            if (Input.pressed(Input.KEYS.S)) shoot('images/characters/magic_ball-02.png');
+            if (Input.pressed(Input.KEYS.D)) shoot('images/characters/magic_ball-03.png');
+            break;}
           }
         });
       })();
