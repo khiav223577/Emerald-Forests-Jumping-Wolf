@@ -57,7 +57,7 @@ function createPlayer(VIEWPORT_X, BASE_Y, callbacks){
     onDestroy: callbacks.onDestroy,
     x: VIEWPORT_X, 
     y: BASE_Y,
-    scale: 1
+    scale: 0.5
   }, function(){
     currentStatus.updateInput(player);
     currentStatus.update(player);

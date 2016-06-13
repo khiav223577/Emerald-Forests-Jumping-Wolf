@@ -1,7 +1,7 @@
 function createSpriteFactory(){
   function getMaxPattern(path){ return MAX_PATTERNS[path] || 1; } 
   var MAX_PATTERNS = {
-    "images/characters/wolf.png": 4,
+    "images/characters/wolf.png": 1,
     "images/characters/enemy.png": 4,
     "images/characters/monster-01.png": 1,
     "images/characters/monster-02.png": 1,
