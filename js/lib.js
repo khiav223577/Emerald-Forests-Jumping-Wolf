@@ -27,14 +27,22 @@ var imageCacher = new function(){
       if (callback) onLoadCache[url].push(callback);
     }
   }
+  function getImageWithScale(url, image, scale){
+    if (scale == undefined || scale == 1) return image;
+    return imageCacher.loadBy(url + '=> scaled: ' + scale.toFixed(2), function(){ 
+      var width = Math.floor(image.width * scale);
+      var height = Math.floor(image.height * scale);
+      return (new FilterableImage(image, width, height).getCanvas()); 
+    });
+  }
   return thisObj = {
-    onload: function(url, callback){
+    onload: function(url, callback, scale){
       if (url == undefined) return; //missing assets
       if (url.getKey){ //sprite
         alert('not support');
         //loadSprite(url, callback);
       }else{
-        loadImage(url, callback);
+        loadImage(url, (callback ? function(image){ return callback(getImageWithScale(url, image, scale)); } : undefined));
       }
     },
     ifloaded: function(url, callback, scale){
@@ -42,14 +50,7 @@ var imageCacher = new function(){
       if (image == undefined){
         thisObj.onload(url);
       }else if (onLoadCache[url] == undefined){
-        if (scale && scale != 1){
-          image = imageCacher.loadBy(url + '=> scaled: ' + scale.toFixed(2), function(){ 
-            var width = Math.floor(image.width * scale);
-            var height = Math.floor(image.height * scale);
-            return (new FilterableImage(image, width, height).getCanvas()); 
-          })
-        }
-        callback(image);
+        callback(getImageWithScale(url, image, scale));
       }
     },
     loadBy: function(url, onMissFunc){
@@ -179,7 +180,7 @@ var sceneManager = new function(){
       var scene = scenes[0];
       if (scene){
         scene.update();
-        _.each(scene.spriteFactory.characters, function(character){
+        scene.spriteFactory.eachCharacter(function(character){
           character.update();
         });
       } 
@@ -189,18 +190,18 @@ var sceneManager = new function(){
       if (scene){
         scene.render1(canvas);
         var ctx = canvas.getContext("2d");
-        _.each(scene.spriteFactory.characters, function(character){
-          character.ifLoaded(function(image){
-            var width = image.width / character.maxPattern;
-            var height = image.height;
-            var x = character.attrs.x - scene.viewX - width / 2;
-            var y = canvas.height - character.attrs.y - height;
-            var sx = character.getPattern() / character.maxPattern * image.width;
-            var sy = 0;
-            ctx.drawImage(image, sx, sy, width, height, x, y, width, height);
-            // var rge = (character.attrs.character || character.attrs.bullet).hitRange; //show hit range
-            // ctx.beginPath(); ctx.arc(x + width / 2,y + height / 2, rge, 0, 2 * Math.PI); ctx.stroke();
-          });
+        scene.spriteFactory.eachCharacter(function(character){
+          var image = character.image;
+          if (image == undefined) return;
+          var width = image.width / character.maxPattern;
+          var height = image.height;
+          var x = character.attrs.x - scene.viewX - character.getOx();
+          var y = canvas.height - character.attrs.y - character.getOy();
+          var sx = character.getPattern() / character.maxPattern * image.width;
+          var sy = 0;
+          ctx.drawImage(image, sx, sy, width, height, x, y, width, height);
+          // var rge = (character.attrs.character || character.attrs.bullet || {}).hitRange || 10; //show hit range
+          // ctx.beginPath(); ctx.arc(x + character.getOx(),y + character.getOy(), rge, 0, 2 * Math.PI); ctx.stroke();
         });
         scene.render2(canvas);
       }
