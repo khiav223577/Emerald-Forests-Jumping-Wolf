@@ -42,6 +42,7 @@ $(function(){
 //-------------------------------------
 function MenuScene(){
   var character;
+  var cd = 0;
   return {
     initialize: function(){
       character = createMonsterType01(650, 80, {path: 'images/characters/monster-02.png'})
@@ -51,12 +52,17 @@ function MenuScene(){
         //TODO sound && animation?
         sceneManager.goto(new MapScene());
       } 
-      // if (Math.rand(25) == 1){
-      //   character.attrs.x -= 700;
-      //   console.log(character.attrs.x)
-      //   character.shoot('images/characters/magic_ball-01.png');
-      //   character.attrs.x += 700;
-      // } 
+      if (cd > 0) return (cd -= 1);
+      if (Math.rand(20) == 1){
+        cd = 10;
+        var offX = -650;
+        var offY = Math.randBetween(-60, 60);
+        character.attrs.x += offX;
+        character.attrs.y += offY
+        character.shoot('images/characters/magic_ball-0' + String(Math.rand(3) + 1) + '.png');
+        character.attrs.x -= offX;
+        character.attrs.y -= offY;
+      } 
     },
     render: function(canvas){
       var ctx = canvas.getContext("2d");

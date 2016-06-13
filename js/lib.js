@@ -1,6 +1,9 @@
 Math.rand = function(value){
   return Math.floor(Math.random() * value);
 };
+Math.randBetween = function(x1, x2){
+  return Math.rand(x2 - x1 + 1) + x1;
+}
 var imageCacher = new function(){
   var onLoadCache = {}, imageCache = {};
   var thisObj;
