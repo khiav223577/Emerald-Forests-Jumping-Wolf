@@ -21,7 +21,7 @@ function LinearPerRatioModel(minRatio, perX){
 }
 
 function createPPBar(x, y, min, max, currentVal){
-  var targetVal, animator = new LinearPerRatioModel(0.045, 8);
+  var targetVal, animator = new LinearPerRatioModel(0.1, 4);
   var blood = sceneManager.getScene().spriteFactory.create('images/bar/blood.png', {
     attrs: {x: x + 6, y: y - 3, scale: 1, patternSpeed: 0, loopPattern: true, fixedPosition: true },
     callbacks: {
@@ -54,7 +54,7 @@ function createPPBar(x, y, min, max, currentVal){
   setValue(currentVal == undefined ? min : currentVal);
   return {
     setValue: setValue,
-    addValue: function(add){ setValue(currentVal + add); },
+    getCurrentValue: function(){ return currentVal; },
     destroy: function(){
       blood.destroy();
       outlayer.destroy();
@@ -131,12 +131,15 @@ function createPlayer(VIEWPORT_X, BASE_Y, callbacks){
         if (Input.pressed(Input.KEYS.A)){ ppbar.setValue(45); }
         if (Input.pressed(Input.KEYS.S)){ ppbar.setValue(55); }
         if (Input.pressed(Input.KEYS.D)){ ppbar.setValue(65); }
-        // if (Input.pressed(Input.KEYS.A)){ character.shoot('images/characters/magic_ball-01.png', 'water' ); changeStatus(STATUSES.IDLE); }
-        // if (Input.pressed(Input.KEYS.S)){ character.shoot('images/characters/magic_ball-02.png', 'fire'  ); changeStatus(STATUSES.IDLE); }
-        // if (Input.pressed(Input.KEYS.D)){ character.shoot('images/characters/magic_ball-03.png', 'ground'); changeStatus(STATUSES.IDLE); }
       },
       update: function(character){
-        if ((singCounter -= 1) < 0) return changeStatus(STATUSES.IDLE);
+        if ((singCounter -= 1) < 0){
+          var val = ppbar.getCurrentValue();
+          if (val >= 40 && val < 50) character.shoot('images/characters/magic_ball-01.png', 'water' );
+          if (val >= 50 && val < 60) character.shoot('images/characters/magic_ball-02.png', 'fire'  );
+          if (val >= 60 && val < 70) character.shoot('images/characters/magic_ball-03.png', 'ground');
+          return changeStatus(STATUSES.IDLE);
+        }
         vy *= 0.9;
       },
       onLeft: function(){
