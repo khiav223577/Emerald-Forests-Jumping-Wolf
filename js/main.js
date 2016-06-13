@@ -119,10 +119,17 @@ function MapScene(){
     },
     render2: function(canvas){
       var ctx = canvas.getContext("2d");
+      ctx.fillStyle = "black";
+      ctx.textAlign = "left";
       ctx.font = "30px Arial";
       ctx.fillText("Score: " + score, 10, 50);
       if (gameover){
-        
+        ctx.fillStyle = "rgba(0, 0, 0, 0.3)";
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        ctx.font = "60px Arial";
+        ctx.fillStyle = "red";
+        ctx.textAlign = "center";
+        ctx.fillText("GAME OVER", canvas.width / 2, canvas.height / 2);
       }
     }
   };
