@@ -83,7 +83,7 @@ function createPlayer(VIEWPORT_X, BASE_Y, callbacks){
     var singCounter, ppbar;
     return {
       initialize: function(){
-        ppbar = createPPBar(100, 300, 0, 80);
+        ppbar = createPPBar(100, 300, 30, 80);
         player.setPath(JUMP_PATH);
         singCounter = 30;
         var singEffect = sceneManager.getScene().spriteFactory.create('images/characters/sing_effect.png', {
@@ -106,16 +106,16 @@ function createPlayer(VIEWPORT_X, BASE_Y, callbacks){
         vy = 6;
       },
       updateInput: function(character){
-        if (Input.pressed(Input.KEYS.A)){ ppbar.setValue(35); }
-        if (Input.pressed(Input.KEYS.S)){ ppbar.setValue(45); }
-        if (Input.pressed(Input.KEYS.D)){ ppbar.setValue(55); }
+        if (Input.pressed(Input.KEYS.A)){ ppbar.setValue(45); }
+        if (Input.pressed(Input.KEYS.S)){ ppbar.setValue(55); }
+        if (Input.pressed(Input.KEYS.D)){ ppbar.setValue(65); }
       },
       update: function(character){
         if ((singCounter -= 1) < 0){
           var val = ppbar.getCurrentValue();
-          if (val >= 30 && val < 40) character.shoot('images/characters/magic_ball-01.png', 'water' );
-          if (val >= 40 && val < 50) character.shoot('images/characters/magic_ball-02.png', 'fire'  );
-          if (val >= 50 && val < 60) character.shoot('images/characters/magic_ball-03.png', 'ground');
+          if (val >= 40 && val < 50) character.shoot('images/characters/magic_ball-03.png', 'ground');
+          if (val >= 50 && val < 60) character.shoot('images/characters/magic_ball-01.png', 'water' );
+          if (val >= 60 && val < 70) character.shoot('images/characters/magic_ball-02.png', 'fire'  );
           return changeStatus(STATUSES.IDLE);
         }
         vy *= 0.9;
