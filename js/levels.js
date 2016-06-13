@@ -63,20 +63,25 @@ function createMonsterType01(x, BASE_Y, attr, onUpdate){
     var character, animator;
     animator = new SpringAnimator(BASE_Y, 20, 0.3, 1600, function(y){ character.attrs.y = y; });
     character = sceneManager.getScene().characterFactory.create(attr.path, {
-      character: {
-        race: 2,
-        hp: attr.hp,
-        atk: attr.atk,
-        hitRange: 30
+      attrs: {
+        character: {
+          race: 2,
+          hp: attr.hp,
+          atk: attr.atk,
+          hitRange: 30
+        },
+        x: x, 
+        y: BASE_Y, 
+        scale: 0.5,
+        loopPattern: true,
+        patternSpeed: 12
       },
-      x: x, 
-      y: BASE_Y, 
-      scale: 0.5,
-      loopPattern: true,
-      patternSpeed: 12
-    }, function(){
-      animator.update();
-      if (onUpdate) onUpdate(character);
+      callbacks: {
+        onUpdate: function(){
+          animator.update();
+          if (onUpdate) onUpdate(character);
+        }
+      }
     });
     ;(function bounce(){
       animator.setVal(BASE_Y + 50 + Math.rand(20)).delay(30 + Math.rand(10), function(){

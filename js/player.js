@@ -13,12 +13,16 @@ function createPlayer(VIEWPORT_X, BASE_Y, callbacks){
       updateInput: function(character){
         if (Input.pressed(Input.KEYS.SPACE)){ 
           sceneManager.getScene().spriteFactory.create('images/characters/sing_effect.png', {
-            x: player.attrs.x + 200,
-            y: 100,
-            scale: 1,
-            loopPattern: false,
-            patternSpeed: 50
-          }, function(){
+            attrs: {
+              x: player.attrs.x,
+              y: player.attrs.y,
+              scale: 2,
+              loopPattern: false,
+              patternSpeed: 50  
+            },
+            callbacks: {
+              
+            }
           });
           return changeStatus(STATUSES.SING);
         }
@@ -57,27 +61,32 @@ function createPlayer(VIEWPORT_X, BASE_Y, callbacks){
   };
   changeStatus(STATUSES.IDLE);
   player = sceneManager.getScene().characterFactory.create('images/characters/wolf.png', {
-    character: {
-      race: 1,
-      hp: 100,
-      atk: 100,
-      hitRange: 3 //not using
+    attrs: {
+      character: {
+        race: 1,
+        hp: 100,
+        atk: 100,
+        hitRange: 3 //not using
+      },
+      onKilled: callbacks.onKilled,
+      onDestroy: callbacks.onDestroy,
+      x: VIEWPORT_X, 
+      y: BASE_Y,
+      scale: 0.5,
+      loopPattern: true,
+      patternSpeed: 12
     },
-    onKilled: callbacks.onKilled,
-    onDestroy: callbacks.onDestroy,
-    x: VIEWPORT_X, 
-    y: BASE_Y,
-    scale: 0.5,
-    loopPattern: true,
-    patternSpeed: 12
-  }, function(){
-    currentStatus.updateInput(player);
-    currentStatus.update(player);
-    player.attrs.x += vx;
-    player.attrs.y += vy;
-    if (player.attrs.y < BASE_Y){
-      player.attrs.y = BASE_Y;
-      vy = 0;
+    callbacks: {
+      onUpdate: function(){
+        currentStatus.updateInput(player);
+        currentStatus.update(player);
+        player.attrs.x += vx;
+        player.attrs.y += vy;
+        if (player.attrs.y < BASE_Y){
+          player.attrs.y = BASE_Y;
+          vy = 0;
+        }
+      }
     }
   });
   return player;
