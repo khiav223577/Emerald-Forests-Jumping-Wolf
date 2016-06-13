@@ -5,11 +5,15 @@ function createPlayer(VIEWPORT_X, BASE_Y, callbacks){
     currentStatus = status;
     status.initialize();
   }
+  IDLE_PATH = 'images/characters/wolf.png';
+  JUMP_PATH = 'images/characters/wolf_jump.png';
+  imageCacher.onload(IDLE_PATH);
+  imageCacher.onload(JUMP_PATH); //preload
   STATUSES.IDLE = new function(){
     var singCD = 0;
     return {
       initialize: function(){
-
+        player.setPath(IDLE_PATH);
       },
       updateInput: function(character){
         if (singCD > 0) singCD -= 1;
@@ -31,6 +35,7 @@ function createPlayer(VIEWPORT_X, BASE_Y, callbacks){
     var singCounter;
     return {
       initialize: function(){
+        player.setPath(JUMP_PATH);
         singCounter = 30;
         var singEffect = sceneManager.getScene().spriteFactory.create('images/characters/sing_effect.png', {
           attrs: {
@@ -62,7 +67,6 @@ function createPlayer(VIEWPORT_X, BASE_Y, callbacks){
       }
     };
   };
-  changeStatus(STATUSES.IDLE);
   player = sceneManager.getScene().characterFactory.create('images/characters/wolf.png', {
     attrs: {
       character: {
@@ -96,5 +100,6 @@ function createPlayer(VIEWPORT_X, BASE_Y, callbacks){
       }
     }
   });
+  changeStatus(STATUSES.IDLE);
   return player;
 }

@@ -10,19 +10,19 @@ var imageCacher = new function(){
 //-------------------------------------
 //  載入圖片
 //-------------------------------------
-  function loadImage(url, callback, scale){
+  function loadImage(url, callback){
     var image = imageCache[url];
     if (image == undefined){ //還沒有開始載入圖片
       imageCache[url] = (image = new Image());
       image.crossOrigin = "anonymous"; //use CORS //https://developer.mozilla.org/en-US/docs/Web/HTML/CORS_settings_attributes
       onLoadCache[url] = (callback ? [callback] : []);
       image.onload = function(){
-        onLoadCache[url].forEach(function(s){ s(getImageWithScale(url, image, scale)); });
+        onLoadCache[url].forEach(function(s){ s(image); });
         delete onLoadCache[url];
       };
       image.src = url;
     }else if (onLoadCache[url] == undefined){ //已經開始載入圖片，且已經載入完成了
-      if (callback) callback(getImageWithScale(url, image, scale));
+      if (callback) callback(image);
     }else{ //已經開始載入圖片，但還沒有載入好
       if (callback) onLoadCache[url].push(callback);
     }
@@ -42,7 +42,7 @@ var imageCacher = new function(){
         alert('not support');
         //loadSprite(url, callback);
       }else{
-        loadImage(url, callback, scale);
+        loadImage(url, (callback ? function(image){ return callback(getImageWithScale(url, image, scale)); } : undefined));
       }
     },
     ifloaded: function(url, callback, scale){
