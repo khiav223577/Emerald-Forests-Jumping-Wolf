@@ -160,7 +160,6 @@ var sceneManager = new function(){
       scene.viewX = 0;
       scene.spriteFactory = createSpriteFactory();
       scene.characterFactory = createCharacterFactory(scene.spriteFactory);
-      scene.bulletFactory = createBulletFactory(scene.spriteFactory);
       scenes.unshift(scene);
       scene.initialize();
     },

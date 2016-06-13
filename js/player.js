@@ -10,32 +10,19 @@ function createPlayer(VIEWPORT_X, BASE_Y){
     	initialize: function(){
 
     	},
-      updateInput: function(){
+      updateInput: function(character){
         if (Input.pressed(Input.KEYS.SPACE)) return changeStatus(STATUSES.SING);
       	if (Input.pressed(Input.KEYS.RIGHT)) vx = 6;
 		    else if (Input.pressed(Input.KEYS.LEFT)) vx = 3;
 		    else vx = 4;
-        if (Input.pressed(Input.KEYS.UP) && player.attrs.y == BASE_Y) vy = 15;
+        if (Input.pressed(Input.KEYS.UP) && character.attrs.y == BASE_Y) vy = 15;
       },
-      update: function(){
-      	if (player.attrs.y > BASE_Y) vy -= 1; //gravity
+      update: function(character){
+      	if (character.attrs.y > BASE_Y) vy -= 1; //gravity
       }
     };
   };
   STATUSES.SING = new function(){
-    function shoot(path){
-      changeStatus(STATUSES.IDLE);
-      sceneManager.getScene().bulletFactory.create(path, {
-        bullet: {
-          existTime: 100,
-          speed: 20
-        },
-        x: player.attrs.x,
-        y: player.attrs.y,
-        atk: player.attrs.atk,
-        hp: 1
-      });
-    }
     var minVy = -2;
     var animator;
     return {
@@ -44,13 +31,13 @@ function createPlayer(VIEWPORT_X, BASE_Y){
 				animator.setVal(-6);
 				animator.update();
     	},
-      updateInput: function(){
-        if (Input.pressed(Input.KEYS.A)) shoot('images/characters/magic_ball-01.png');
-        if (Input.pressed(Input.KEYS.S)) shoot('images/characters/magic_ball-02.png');
-        if (Input.pressed(Input.KEYS.D)) shoot('images/characters/magic_ball-03.png');
+      updateInput: function(character){
+        if (Input.pressed(Input.KEYS.A)){ character.shoot('images/characters/magic_ball-01.png'); changeStatus(STATUSES.IDLE); }
+        if (Input.pressed(Input.KEYS.S)){ character.shoot('images/characters/magic_ball-02.png'); changeStatus(STATUSES.IDLE); }
+        if (Input.pressed(Input.KEYS.D)){ character.shoot('images/characters/magic_ball-03.png'); changeStatus(STATUSES.IDLE); }
       },
-      update: function(){
-      	if (player.attrs.y > BASE_Y) animator.update();
+      update: function(character){
+      	if (character.attrs.y > BASE_Y) animator.update();
       	else{
       		animator = undefined;
       		changeStatus(STATUSES.IDLE);
@@ -61,6 +48,7 @@ function createPlayer(VIEWPORT_X, BASE_Y){
   changeStatus(STATUSES.IDLE);
   var player = sceneManager.getScene().characterFactory.create('images/characters/wolf.png', {
     character: {
+      race: 1,
       hp: 100,
       atk: 100 
     },
@@ -68,8 +56,8 @@ function createPlayer(VIEWPORT_X, BASE_Y){
     y: BASE_Y,
     scale: 1
   }, function(){
-    currentStatus.updateInput();
-    currentStatus.update();
+    currentStatus.updateInput(player);
+    currentStatus.update(player);
     player.attrs.x += vx;
     player.attrs.y += vy;
     if (player.attrs.y < BASE_Y){
