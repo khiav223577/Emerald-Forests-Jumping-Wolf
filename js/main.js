@@ -100,7 +100,7 @@ function MenuScene(){
 //  MapScene
 //-------------------------------------
 function MapScene(){
-  var VIEWPORT_X = 90; //視角讓狼固定在的X位置
+  var VIEWPORT_X = 100; //視角讓狼固定在的X位置
   var BASE_Y = 80;     //地面高度
   var score = 0;
   var thisObj, player, enemyRespawnController;
