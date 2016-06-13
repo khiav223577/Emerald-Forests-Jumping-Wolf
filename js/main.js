@@ -64,10 +64,13 @@ function MenuScene(){
         character.attrs.y -= offY;
       } 
     },
-    render: function(canvas){
+    render1: function(canvas){
       var ctx = canvas.getContext("2d");
       drawImageWithXRepeat(canvas, 0, 0.1, 'images/background.jpg');
       drawImageWithXRepeat(canvas, 0, 1.0, 'images/ground.png');
+    },
+    render2: function(canvas){
+      var ctx = canvas.getContext("2d");
       imageCacher.ifloaded('images/menu/title.png', function(image){
         ctx.drawImage(image, (canvas.width - image.width) / 2, 152 - image.height / 2, image.width, image.height);  
       }, 0.48);
@@ -92,11 +95,14 @@ function MapScene(){
     update: function(deltaRatio){
       enemyRespawnController.update(player);
     },
-    render: function(canvas){
+    render1: function(canvas){
       var ctx = canvas.getContext("2d");
       var viewX = sceneManager.getScene().viewX = player.attrs.x - VIEWPORT_X;
       drawImageWithXRepeat(canvas, viewX, 0.1, 'images/background.jpg');
       drawImageWithXRepeat(canvas, viewX, 1.0, 'images/ground.png');
+    },
+    render2: function(canvas){
+
     }
   };
 }

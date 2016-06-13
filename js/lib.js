@@ -187,7 +187,7 @@ var sceneManager = new function(){
     render: function(canvas){
       var scene = scenes[0];
       if (scene){
-        scene.render(canvas);
+        scene.render1(canvas);
         var ctx = canvas.getContext("2d");
         _.each(scene.spriteFactory.characters, function(character){
           character.ifLoaded(function(image){
@@ -202,6 +202,7 @@ var sceneManager = new function(){
             // ctx.beginPath(); ctx.arc(x + width / 2,y + height / 2, rge, 0, 2 * Math.PI); ctx.stroke();
           });
         });
+        scene.render2(canvas);
       }
     },
     getScene: function(){
