@@ -90,7 +90,14 @@ function MapScene(){
   var thisObj, player, enemyRespawnController;
   return thisObj = {
     initialize: function(){
-      player = createPlayer(VIEWPORT_X, BASE_Y);
+      player = createPlayer(VIEWPORT_X, BASE_Y, {
+        onKilled: function(){
+
+        },
+        onDestroy: function(){
+
+        }
+      });
       enemyRespawnController = createLevelController(BASE_Y);
       thisObj.characterFactory.onCharacterKilled = function(){
         score += 10;

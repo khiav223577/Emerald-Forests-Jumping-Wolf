@@ -32,6 +32,7 @@ function createSpriteFactory(){
           },
           destroy: function(){
             if (isDestroyed.changeTo(true) == false) return;
+            if (attrs.onDestroy) attrs.onDestroy();
             delete characters[cid];
           }
         };
@@ -52,8 +53,10 @@ function createCharacterFactory(spriteFactory){
       var isDead = new FlagObject(false);
       _.merge(character, {
         damage: function(damage){
+          if (attrs.onDamaged) attrs.onDamaged(damage);
           attrs.character.hp -= damage;
           if (attrs.character.hp <= 0 && isDead.changeTo(true) == true){
+            if (attrs.onKilled) attrs.onKilled();
             if (thisObj.onCharacterKilled) thisObj.onCharacterKilled(character);
             character.destroy(); //TODO 死亡動畫
           }
