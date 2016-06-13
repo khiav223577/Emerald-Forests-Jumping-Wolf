@@ -1,5 +1,5 @@
 function createPlayer(VIEWPORT_X, BASE_Y, callbacks){
-  var vx = 0, vy = 0;
+  var player, vx = 0, vy = 0;
   var currentStatus, STATUSES = {};
   function changeStatus(status){
     currentStatus = status;
@@ -11,7 +11,12 @@ function createPlayer(VIEWPORT_X, BASE_Y, callbacks){
 
       },
       updateInput: function(character){
-        if (Input.pressed(Input.KEYS.SPACE)) return changeStatus(STATUSES.SING);
+        if (Input.pressed(Input.KEYS.SPACE)){ 
+          sceneManager.getScene().spriteFactory.create('images/characters/sing_effect.png', {x: player.attrs.x + 200, y: 100, scale: 1}, function(){
+
+          });
+          return changeStatus(STATUSES.SING);
+        }
         if (Input.pressed(Input.KEYS.RIGHT)) vx = 6;
         else if (Input.pressed(Input.KEYS.LEFT)) vx = 3;
         else vx = 4;
@@ -46,7 +51,7 @@ function createPlayer(VIEWPORT_X, BASE_Y, callbacks){
     };
   };
   changeStatus(STATUSES.IDLE);
-  var player = sceneManager.getScene().characterFactory.create('images/characters/wolf.png', {
+  player = sceneManager.getScene().characterFactory.create('images/characters/wolf.png', {
     character: {
       race: 1,
       hp: 100,

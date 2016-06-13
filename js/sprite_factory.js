@@ -5,7 +5,8 @@ function createSpriteFactory(){
     "images/characters/enemy.png": 4,
     "images/characters/monster-01.png": 1,
     "images/characters/monster-02.png": 1,
-    "images/characters/monster-03.png": 1
+    "images/characters/monster-03.png": 1,
+    "images/characters/sing_effect.png": 15
   };
   return new function(){
     var characters = {}, counter = 0;
