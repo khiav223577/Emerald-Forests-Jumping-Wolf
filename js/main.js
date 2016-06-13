@@ -86,11 +86,15 @@ function MenuScene(){
 function MapScene(){
   var VIEWPORT_X = 90; //視角讓狼固定在的X位置
   var BASE_Y = 80;     //地面高度
-  var player, enemyRespawnController;
-  return {
+  var score = 0;
+  var thisObj, player, enemyRespawnController;
+  return thisObj = {
     initialize: function(){
       player = createPlayer(VIEWPORT_X, BASE_Y);
       enemyRespawnController = createLevelController(BASE_Y);
+      thisObj.characterFactory.onCharacterKilled = function(){
+        score += 10;
+      };
     },
     update: function(deltaRatio){
       enemyRespawnController.update(player);
@@ -102,7 +106,9 @@ function MapScene(){
       drawImageWithXRepeat(canvas, viewX, 1.0, 'images/ground.png');
     },
     render2: function(canvas){
-
+      var ctx = canvas.getContext("2d");
+      ctx.font = "30px Arial";
+      ctx.fillText("Score: " + score, 10, 50);
     }
   };
 }
