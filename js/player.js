@@ -6,12 +6,17 @@ function createPlayer(VIEWPORT_X, BASE_Y, callbacks){
     status.initialize();
   }
   STATUSES.IDLE = new function(){
+    var singCD = 0;
     return {
       initialize: function(){
 
       },
       updateInput: function(character){
-        if (Input.pressed(Input.KEYS.SPACE)) return changeStatus(STATUSES.SING);
+        if (singCD > 0) singCD -= 1;
+        if (Input.pressed(Input.KEYS.SPACE) && singCD == 0){ 
+          singCD = 15;
+          return changeStatus(STATUSES.SING);
+        }
         if (Input.pressed(Input.KEYS.RIGHT)) vx = 6;
         else if (Input.pressed(Input.KEYS.LEFT)) vx = 3;
         else vx = 4;
