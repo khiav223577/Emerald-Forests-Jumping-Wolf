@@ -10,31 +10,39 @@ var imageCacher = new function(){
 //-------------------------------------
 //  載入圖片
 //-------------------------------------
-  function loadImage(url, callback){
+  function loadImage(url, callback, scale){
     var image = imageCache[url];
     if (image == undefined){ //還沒有開始載入圖片
       imageCache[url] = (image = new Image());
       image.crossOrigin = "anonymous"; //use CORS //https://developer.mozilla.org/en-US/docs/Web/HTML/CORS_settings_attributes
       onLoadCache[url] = (callback ? [callback] : []);
       image.onload = function(){
-        onLoadCache[url].forEach(function(s){ s(image); });
+        onLoadCache[url].forEach(function(s){ s(getImageWithScale(url, image, scale)); });
         delete onLoadCache[url];
       };
       image.src = url;
     }else if (onLoadCache[url] == undefined){ //已經開始載入圖片，且已經載入完成了
-      if (callback) callback(image);
+      if (callback) callback(getImageWithScale(url, image, scale));
     }else{ //已經開始載入圖片，但還沒有載入好
       if (callback) onLoadCache[url].push(callback);
     }
   }
+  function getImageWithScale(url, image, scale){
+    if (scale == undefined || scale == 1) return image;
+    return imageCacher.loadBy(url + '=> scaled: ' + scale.toFixed(2), function(){ 
+      var width = Math.floor(image.width * scale);
+      var height = Math.floor(image.height * scale);
+      return (new FilterableImage(image, width, height).getCanvas()); 
+    });
+  }
   return thisObj = {
-    onload: function(url, callback){
+    onload: function(url, callback, scale){
       if (url == undefined) return; //missing assets
       if (url.getKey){ //sprite
         alert('not support');
         //loadSprite(url, callback);
       }else{
-        loadImage(url, callback);
+        loadImage(url, callback, scale);
       }
     },
     ifloaded: function(url, callback, scale){
@@ -42,14 +50,7 @@ var imageCacher = new function(){
       if (image == undefined){
         thisObj.onload(url);
       }else if (onLoadCache[url] == undefined){
-        if (scale && scale != 1){
-          image = imageCacher.loadBy(url + '=> scaled: ' + scale.toFixed(2), function(){ 
-            var width = Math.floor(image.width * scale);
-            var height = Math.floor(image.height * scale);
-            return (new FilterableImage(image, width, height).getCanvas()); 
-          })
-        }
-        callback(image);
+        callback(getImageWithScale(url, image, scale));
       }
     },
     loadBy: function(url, onMissFunc){
@@ -190,17 +191,17 @@ var sceneManager = new function(){
         scene.render1(canvas);
         var ctx = canvas.getContext("2d");
         scene.spriteFactory.eachCharacter(function(character){
-          character.ifLoaded(function(image){
-            var width = image.width / character.maxPattern;
-            var height = image.height;
-            var x = character.attrs.x - scene.viewX - character.getOx(width);
-            var y = canvas.height - character.attrs.y - character.getOy(height);
-            var sx = character.getPattern() / character.maxPattern * image.width;
-            var sy = 0;
-            ctx.drawImage(image, sx, sy, width, height, x, y, width, height);
-            // var rge = (character.attrs.character || character.attrs.bullet || {}).hitRange || 10; //show hit range
-            // ctx.beginPath(); ctx.arc(x + character.getOx(width),y + character.getOy(height), rge, 0, 2 * Math.PI); ctx.stroke();
-          });
+          var image = character.image;
+          if (image == undefined) return;
+          var width = image.width / character.maxPattern;
+          var height = image.height;
+          var x = character.attrs.x - scene.viewX - character.getOx();
+          var y = canvas.height - character.attrs.y - character.getOy();
+          var sx = character.getPattern() / character.maxPattern * image.width;
+          var sy = 0;
+          ctx.drawImage(image, sx, sy, width, height, x, y, width, height);
+          // var rge = (character.attrs.character || character.attrs.bullet || {}).hitRange || 10; //show hit range
+          // ctx.beginPath(); ctx.arc(x + character.getOx(),y + character.getOy(), rge, 0, 2 * Math.PI); ctx.stroke();
         });
         scene.render2(canvas);
       }

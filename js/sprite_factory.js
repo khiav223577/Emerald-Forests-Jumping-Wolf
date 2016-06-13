@@ -22,8 +22,8 @@ function createSpriteFactory(){
         var callbacks = options.callbacks || {};
         var character = {
           attrs: attrs,
-          getOx: callbacks.getOx,
-          getOy: callbacks.getOy,
+          getOx: function(){ return callbacks.getOx(character.image.width / character.maxPattern); },
+          getOy: function(){ return callbacks.getOy(character.image.height); },
           ifLoaded: function(callback){
             imageCacher.ifloaded(path, function(image){ callback(image); }, attrs.scale);
           },
@@ -47,7 +47,7 @@ function createSpriteFactory(){
             delete characters[cid];
           }
         };
-        imageCacher.onload(path, function(image){ character.image = image; });
+        imageCacher.onload(path, function(image){ character.image = image; }, attrs.scale);
         return characters[cid] = character;
       },
       destroy: function(){
