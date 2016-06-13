@@ -83,7 +83,7 @@ function createPlayer(VIEWPORT_X, BASE_Y, callbacks){
     var singCounter, ppbar;
     return {
       initialize: function(){
-        ppbar = createPPBar(100, 300, 30, 80);
+        ppbar = createPPBar(50, 500, 30, 80);
         player.setPath(JUMP_PATH);
         singCounter = 30;
         var singEffect = sceneManager.getScene().spriteFactory.create('images/characters/sing_effect.png', {
