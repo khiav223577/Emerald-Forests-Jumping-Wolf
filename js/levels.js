@@ -50,7 +50,7 @@ function createLevelController(BASE_Y){
         var x = level.position;
         _.each(level.emyAttrs, function(attr){
           createMonsterType01(x, BASE_Y, attr, function(character){
-            if (character.attrs.x < player.attrs.x) character.damage(999999); //TODO damage player
+            if (character.attrs.x < player.attrs.x) player.damage(99999); //gameover
           });
           x += 80 + Math.rand(50);
         });

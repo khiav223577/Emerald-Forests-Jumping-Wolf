@@ -48,7 +48,7 @@ function MenuScene(){
       character = createMonsterType01(650, 80, {path: 'images/characters/monster-02.png'})
     },
     update: function(deltaRatio){
-      if (Input.pressed(Input.KEYS.ENTER)){
+      if (Input.triggered(Input.KEYS.ENTER)){
         //TODO sound && animation?
         sceneManager.goto(new MapScene());
       } 
@@ -86,13 +86,29 @@ function MenuScene(){
 function MapScene(){
   var VIEWPORT_X = 90; //視角讓狼固定在的X位置
   var BASE_Y = 80;     //地面高度
-  var player, enemyRespawnController;
-  return {
+  var score = 0;
+  var thisObj, player, enemyRespawnController;
+  var gameover = false;
+  return thisObj = {
     initialize: function(){
-      player = createPlayer(VIEWPORT_X, BASE_Y);
+      player = createPlayer(VIEWPORT_X, BASE_Y, {
+        onKilled: function(){
+          //TODO pause
+        },
+        onDestroy: function(){
+          gameover = true;
+        }
+      });
       enemyRespawnController = createLevelController(BASE_Y);
+      thisObj.characterFactory.onCharacterKilled = function(){
+        score += 10;
+      };
     },
     update: function(deltaRatio){
+      if (gameover){
+        if (Input.triggered(Input.KEYS.ENTER)) sceneManager.goto(new MenuScene());
+        return;
+      }
       enemyRespawnController.update(player);
     },
     render1: function(canvas){
@@ -102,7 +118,19 @@ function MapScene(){
       drawImageWithXRepeat(canvas, viewX, 1.0, 'images/ground.png');
     },
     render2: function(canvas){
-
+      var ctx = canvas.getContext("2d");
+      ctx.fillStyle = "black";
+      ctx.textAlign = "left";
+      ctx.font = "30px Arial";
+      ctx.fillText("Score: " + score, 10, 50);
+      if (gameover){
+        ctx.fillStyle = "rgba(0, 0, 0, 0.3)";
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        ctx.font = "60px Arial";
+        ctx.fillStyle = "red";
+        ctx.textAlign = "center";
+        ctx.fillText("GAME OVER", canvas.width / 2, canvas.height / 2);
+      }
     }
   };
 }

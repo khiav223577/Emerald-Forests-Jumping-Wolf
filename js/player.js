@@ -1,4 +1,4 @@
-function createPlayer(VIEWPORT_X, BASE_Y){
+function createPlayer(VIEWPORT_X, BASE_Y, callbacks){
   var vx = 0, vy = 0;
   var currentStatus, STATUSES = {};
   function changeStatus(status){
@@ -53,6 +53,8 @@ function createPlayer(VIEWPORT_X, BASE_Y){
       atk: 100,
       hitRange: 3 //not using
     },
+    onKilled: callbacks.onKilled,
+    onDestroy: callbacks.onDestroy,
     x: VIEWPORT_X, 
     y: BASE_Y,
     scale: 1

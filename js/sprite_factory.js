@@ -32,6 +32,7 @@ function createSpriteFactory(){
           },
           destroy: function(){
             if (isDestroyed.changeTo(true) == false) return;
+            if (attrs.onDestroy) attrs.onDestroy();
             delete characters[cid];
           }
         };
@@ -45,17 +46,19 @@ function createSpriteFactory(){
   }
 }
 function createCharacterFactory(spriteFactory){
-  var bulletFactory = createBulletFactory(spriteFactory);
-  return {
+  var thisObj, bulletFactory = createBulletFactory(spriteFactory);
+  return thisObj = {
     create: function(path, attrs, preUpdateFunc){  //attrs = {x: ?, y: ?, scale: ?, character: {atk: ?, hp: ?, race: ?, hitRange: ?}}
       var character = spriteFactory.create(path, attrs, preUpdateFunc);
       var isDead = new FlagObject(false);
       _.merge(character, {
         damage: function(damage){
+          if (attrs.onDamaged) attrs.onDamaged(damage);
           attrs.character.hp -= damage;
           if (attrs.character.hp <= 0 && isDead.changeTo(true) == true){
-            //TODO 死亡動畫
-            character.destroy();
+            if (attrs.onKilled) attrs.onKilled();
+            if (thisObj.onCharacterKilled) thisObj.onCharacterKilled(character);
+            character.destroy(); //TODO 死亡動畫
           }
         },
         shoot: function(path){
