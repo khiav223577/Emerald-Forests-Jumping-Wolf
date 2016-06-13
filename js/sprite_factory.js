@@ -2,14 +2,15 @@ var assetsManager = new function(){
   var MAX_PATTERNS = {
     "images/bar/blood.png": 1,
     "images/bar/inlayer.png": 1,
-    "images/characters/wolf.png": 2,
-    "images/characters/wolf_jump.png": 1,
-    "images/characters/wolf_stand.png": 1,
     "images/characters/monster-01.png": 1,
     "images/characters/monster-02.png": 1,
     "images/characters/monster-03.png": 1,
     "images/characters/sing_effect.png": 15
   };
+  var s = window.location.search[1] || '0';
+  MAX_PATTERNS["images/characters/wolf-" + s + ".png"] = 2;
+  MAX_PATTERNS["images/characters/wolf_jump-" + s + ".png"] = 1;
+  MAX_PATTERNS["images/characters/wolf_stand-" + s + ".png"] = 1;
   var preloadFlag = new FlagObject(false);
   return {
     getMaxPattern: function(path){ return MAX_PATTERNS[path] || 1; },
