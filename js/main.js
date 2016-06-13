@@ -41,15 +41,22 @@ $(function(){
 //  MenuScene
 //-------------------------------------
 function MenuScene(){
+  var character;
   return {
     initialize: function(){
-      createMonsterType01(450, 80, {path: 'images/characters/monster-02.png'})
+      character = createMonsterType01(650, 80, {path: 'images/characters/monster-02.png'})
     },
     update: function(deltaRatio){
       if (Input.pressed(Input.KEYS.ENTER)){
         //TODO sound && animation?
         sceneManager.goto(new MapScene());
       } 
+      // if (Math.rand(25) == 1){
+      //   character.attrs.x -= 700;
+      //   console.log(character.attrs.x)
+      //   character.shoot('images/characters/magic_ball-01.png');
+      //   character.attrs.x += 700;
+      // } 
     },
     render: function(canvas){
       var ctx = canvas.getContext("2d");

@@ -190,7 +190,7 @@ var sceneManager = new function(){
           character.ifLoaded(function(image){
             var width = image.width / character.maxPattern;
             var height = image.height;
-            var x = character.attrs.x - scene.viewX + width / 2;
+            var x = character.attrs.x - scene.viewX - width / 2;
             var y = canvas.height - character.attrs.y - height;
             var sx = character.getPattern() / character.maxPattern * image.width;
             var sy = 0;
