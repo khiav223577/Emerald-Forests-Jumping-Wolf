@@ -10,7 +10,9 @@ function createSpriteFactory(){
   return new function(){
     var characters = {}, counter = 0;
     return {
-      characters: characters,
+      eachCharacter: function(callback){
+        _.each(characters, function(character){ if (character) callback(character); }); //character may be destroyed in this loop
+      },
       create: function(path, attrs, preUpdateFunc){ //attrs = {x: ?, y: ?, scale: ?}
         var cid = (counter += 1);
         var isDestroyed = new FlagObject(false);
@@ -89,8 +91,7 @@ function createBulletFactory(spriteFactory){
       var bullet = spriteFactory.create(path, attrs, function(){ //attrs = {x: ?, y: ?, atk: ?, hp: ?}
         if ((attrs.bullet.existTime -= 1) < 0) return bullet.destroy(); //TODO 子彈消失動畫
         bullet.attrs.x += attrs.bullet.speed;
-        _.each(spriteFactory.characters, function(other){
-          if (other == undefined) return; //destroyed in this loop
+        spriteFactory.eachCharacter(function(other){
           if (other.attrs.character == undefined) return; //bullet can only hit character
           if (other.attrs.character.race == bullet.attrs.bullet.race) return; //can only hit different race
           var offx = other.attrs.x - bullet.attrs.x;

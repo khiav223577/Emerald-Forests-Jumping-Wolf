@@ -179,7 +179,7 @@ var sceneManager = new function(){
       var scene = scenes[0];
       if (scene){
         scene.update();
-        _.each(scene.spriteFactory.characters, function(character){
+        scene.spriteFactory.eachCharacter(function(character){
           character.update();
         });
       } 
@@ -189,7 +189,7 @@ var sceneManager = new function(){
       if (scene){
         scene.render1(canvas);
         var ctx = canvas.getContext("2d");
-        _.each(scene.spriteFactory.characters, function(character){
+        scene.spriteFactory.eachCharacter(function(character){
           character.ifLoaded(function(image){
             var width = image.width / character.maxPattern;
             var height = image.height;
