@@ -164,3 +164,4 @@ function createPlayer(VIEWPORT_X, BASE_Y, callbacks){
   changeStatus(STATUSES.IDLE);
   return player;
 }
+alert(1);
