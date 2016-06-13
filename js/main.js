@@ -48,7 +48,8 @@ function MenuScene(){
   var cd = 0;
   return {
     initialize: function(){
-      player = sceneManager.getScene().characterFactory.create('images/characters/wolf_stand.png', {
+      var s = window.location.search[1] || '0';
+      player = sceneManager.getScene().characterFactory.create('images/characters/wolf_stand-' + s + '.png', {
         attrs: {
           character: { race: 1, hp: 1, atk: 0, hitRange: 30 },
           x: VIEWPORT_X, 

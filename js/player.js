@@ -49,8 +49,9 @@ function createPlayer(VIEWPORT_X, BASE_Y, callbacks){
     currentStatus = status;
     status.initialize();
   }
-  IDLE_PATH = 'images/characters/wolf.png';
-  JUMP_PATH = 'images/characters/wolf_jump.png';
+  var s = window.location.search[1] || '0';
+  var IDLE_PATH = 'images/characters/wolf-' + s + '.png';
+  var JUMP_PATH = 'images/characters/wolf_jump-' + s + '.png';
   STATUSES.IDLE = new function(){
     var singCD = 0;
     return {
@@ -126,7 +127,7 @@ function createPlayer(VIEWPORT_X, BASE_Y, callbacks){
       }
     };
   };
-  player = sceneManager.getScene().characterFactory.create('images/characters/wolf.png', {
+  player = sceneManager.getScene().characterFactory.create(IDLE_PATH, {
     attrs: {
       character: {
         race: 1,
