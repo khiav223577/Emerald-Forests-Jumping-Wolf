@@ -26,8 +26,10 @@ function createPlayer(VIEWPORT_X, BASE_Y){
     function shoot(path){
       changeStatus(STATUSES.IDLE);
       sceneManager.getScene().bulletFactory.create(path, {
-        existTime: 100,
-        speed: 20,
+        bullet: {
+          existTime: 100,
+          speed: 20
+        },
         x: player.attrs.x,
         y: player.attrs.y,
         atk: player.attrs.atk,
@@ -58,10 +60,13 @@ function createPlayer(VIEWPORT_X, BASE_Y){
   };
   changeStatus(STATUSES.IDLE);
   var player = sceneManager.getScene().characterFactory.create('images/characters/wolf.png', {
+    character: {
+      hp: 100,
+      atk: 100 
+    },
     x: VIEWPORT_X, 
     y: BASE_Y,
-    hp: 100,
-    atk: 100
+    scale: 1
   }, function(){
     currentStatus.updateInput();
     currentStatus.update();

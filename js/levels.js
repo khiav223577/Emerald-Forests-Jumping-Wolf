@@ -63,11 +63,13 @@ function createMonsterType01(x, BASE_Y, attr, onUpdate){
     var character, animator;
     animator = new SpringAnimator(BASE_Y, 20, 0.3, 1600, function(y){ character.attrs.y = y; });
     character = sceneManager.getScene().characterFactory.create(attr.path, {
+      character: {
+        hp: attr.hp,
+        atk: attr.atk  
+      },
       x: x, 
       y: BASE_Y, 
-      scale: 0.5,
-      hp: attr.hp,
-      atk: attr.atk
+      scale: 0.5
     }, function(){
       animator.update();
       if (onUpdate) onUpdate(character);
