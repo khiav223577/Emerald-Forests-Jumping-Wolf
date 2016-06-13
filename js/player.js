@@ -1,7 +1,6 @@
 function createPPBar(x, y, min, max, val){
-  if (val == undefined) val = min;
   var blood = sceneManager.getScene().spriteFactory.create('images/bar/blood.png', {
-    attrs: {x: x + 6, y: y - 3, scale: 1, patternSpeed: 0, loopPattern: true, fixedPosition: true, ratio: 0.5 },
+    attrs: {x: x + 6, y: y - 3, scale: 1, patternSpeed: 0, loopPattern: true, fixedPosition: true },
     callbacks: {
       getOx: function(s){ return 0; },
       getOy: function(s){ return 0; },
@@ -16,13 +15,19 @@ function createPPBar(x, y, min, max, val){
       onUpdate: function(){}
     }
   });
+  function setValue(_val){
+    val = Math.max(Math.min(_val, max), min);
+    if (blood) blood.attrs.ratio = (val - min) / (max - min);
+  }
+  setValue(val == undefined ? min : val);
   return {
-    setValue: function(_val){
-      val = _val;
-    },
+    setValue: setValue,
+    addValue: function(add){ setValue(val + add); },
     destroy: function(){
       blood.destroy();
       outlayer.destroy();
+      blood = undefined;
+      outlayer = undefined;
     }
   }
 }
@@ -96,6 +101,7 @@ function createPlayer(VIEWPORT_X, BASE_Y, callbacks){
         if (Input.pressed(Input.KEYS.D)){ character.shoot('images/characters/magic_ball-03.png', 'ground'); changeStatus(STATUSES.IDLE); }
       },
       update: function(character){
+        ppbar.addValue(1);
         if ((singCounter -= 1) < 0) return changeStatus(STATUSES.IDLE);
         vy *= 0.9;
       },
