@@ -78,7 +78,7 @@ function createSpriteFactory(){
 function createCharacterFactory(spriteFactory){
   var thisObj, bulletFactory = createBulletFactory(spriteFactory);
   return thisObj = {
-    create: function(path, options){  //attrs = {x: ?, y: ?, scale: ?, character: {atk: ?, hp: ?, race: ?, hitRange: ?}}
+    create: function(path, options){  //attrs = {x: ?, y: ?, scale: ?, character: {atk: ?, hp: ?, race: ?, hitRange: ?, element: ?}}
       var attrs = options.attrs;
       var character = spriteFactory.create(path, options);
       var isDead = new FlagObject(false);
@@ -92,10 +92,11 @@ function createCharacterFactory(spriteFactory){
             character.destroy(); //TODO 死亡動畫
           }
         },
-        shoot: function(path){
+        shoot: function(path, element){
           bulletFactory.create(path, {
             attrs: {
               bullet: {
+                element: element,
                 atk: character.attrs.character.atk,
                 hp: 1,
                 existTime: 100,
@@ -126,6 +127,11 @@ function createCharacterFactory(spriteFactory){
 //  Bullet
 //-------------------------------------
 function createBulletFactory(spriteFactory){
+  var EffectElement = {
+    fire: 1,
+    ground: 2,
+    water: 3
+  };
   return {
     create: function(path, options){  //attrs = {x: ?, y: ?, scale: ?, bullet: {atk: ?, hp: ?, speed: ?, existTime: ?, race: ?, hitRange: ?}}
       var bullet, preOnUpdate = options.callbacks.onUpdate, attrs = options.attrs;
@@ -139,7 +145,11 @@ function createBulletFactory(spriteFactory){
           var offx = other.attrs.x - bullet.attrs.x;
           var offy = other.attrs.y - bullet.attrs.y;
           if (Math.sqrt(offx * offx + offy * offy) <= bullet.attrs.bullet.hitRange + other.attrs.character.hitRange){
-            other.damage(bullet.attrs.bullet.atk);
+            var ef1 = EffectElement[bullet.attrs.bullet.element];
+            var ef2 = EffectElement[other.attrs.character.element];
+            var damage = 0;
+            if (ef1 && ef2 && (ef1 + 1 == ef2 || ef1 + 1 == ef2 + _.size(EffectElement))) damage = bullet.attrs.bullet.atk;
+            other.damage(damage);
             bullet.destroy();
           }
         });

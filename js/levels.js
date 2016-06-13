@@ -5,36 +5,26 @@ function createLevelController(BASE_Y){
       if (levels[0] == undefined){
         (function(){
           difficulty += 1;
-          var sx = player.attrs.x + 100;  
+          var sx = player.attrs.x + 100;
+          var emys = [
+            {hp: 100, atk: 100, path: 'images/characters/monster-01.png', element: 'water' },
+            {hp: 100, atk: 100, path: 'images/characters/monster-02.png', element: 'fire'  },
+            {hp: 100, atk: 100, path: 'images/characters/monster-03.png', element: 'ground'},
+          ];  
           switch(difficulty){
           case 1: {
-            var emys = [
-              {hp: 100, atk: 100, path: 'images/characters/monster-01.png'},
-              {hp: 100, atk: 100, path: 'images/characters/monster-02.png'},
-              {hp: 100, atk: 100, path: 'images/characters/monster-03.png'},
-            ];
             _.times(10, function(s){
               sx += 500 + Math.rand(300);
               levels.push({position: sx, emyAttrs: _.sample(emys, 1)});
             });
             break;}
           case 2: {
-            var emys = [
-              {hp: 100, atk: 100, path: 'images/characters/monster-01.png'},
-              {hp: 100, atk: 100, path: 'images/characters/monster-02.png'},
-              {hp: 100, atk: 100, path: 'images/characters/monster-03.png'},
-            ];
             _.times(10, function(s){
               sx += 500 + Math.rand(300);
               levels.push({position: sx, emyAttrs: _.sample(emys, 2)});
             });
             break;}
           default: {
-            var emys = [
-              {hp: 100, atk: 100, path: 'images/characters/monster-01.png'},
-              {hp: 100, atk: 100, path: 'images/characters/monster-02.png'},
-              {hp: 100, atk: 100, path: 'images/characters/monster-03.png'},
-            ];
             _.times(10, function(s){
               sx += 500 + Math.rand(300);
               levels.push({position: sx, emyAttrs: _.sample(emys, 3)});
@@ -48,8 +38,8 @@ function createLevelController(BASE_Y){
       if (level && level.position < player.attrs.x + 1000){
         levels.shift();
         var x = level.position;
-        _.each(level.emyAttrs, function(attr){
-          createMonsterType01(x, BASE_Y, attr, function(character){
+        _.each(level.emyAttrs, function(characterAttr){
+          createMonsterType01(x, BASE_Y, characterAttr, function(character){
             if (character.attrs.x < player.attrs.x) player.damage(99999); //gameover
           });
           x += 80 + Math.rand(50);
@@ -58,16 +48,17 @@ function createLevelController(BASE_Y){
     }
   };
 }
-function createMonsterType01(x, BASE_Y, attr, onUpdate){
+function createMonsterType01(x, BASE_Y, characterAttr, onUpdate){
   return (function(){
     var character, animator;
     animator = new SpringAnimator(BASE_Y, 20, 0.3, 1600, function(y){ character.attrs.y = y; });
-    character = sceneManager.getScene().characterFactory.create(attr.path, {
+    character = sceneManager.getScene().characterFactory.create(characterAttr.path, {
       attrs: {
         character: {
+          element: characterAttr.element,
           race: 2,
-          hp: attr.hp,
-          atk: attr.atk,
+          hp: characterAttr.hp,
+          atk: characterAttr.atk,
           hitRange: 30
         },
         x: x, 
