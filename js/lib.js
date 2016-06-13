@@ -347,10 +347,10 @@ function createRecorder(fftSize){
     isReady: function(){
       return (analyser != undefined);
     },
-    getData: function(){
+    getAverage: function(){
       if (analyser == undefined) return;
       analyser.getByteFrequencyData(dataArray);
-      return dataArray;
+      return _.sum(dataArray) / fftSize;
     }
   }
 }
