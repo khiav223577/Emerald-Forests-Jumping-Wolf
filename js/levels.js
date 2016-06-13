@@ -77,6 +77,8 @@ function createMonsterType01(x, BASE_Y, attr, onUpdate){
         patternSpeed: 12
       },
       callbacks: {
+        getOx: function(s){ return s / 2; },
+        getOy: function(s){ return s; },
         onUpdate: function(){
           animator.update();
           if (onUpdate) onUpdate(character);

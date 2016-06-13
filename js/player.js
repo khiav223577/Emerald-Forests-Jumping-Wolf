@@ -21,7 +21,11 @@ function createPlayer(VIEWPORT_X, BASE_Y, callbacks){
               patternSpeed: 50  
             },
             callbacks: {
-              
+              getOx: function(s){ return s / 2; },
+              getOy: function(s){ return s / 2; },
+              onUpdate: function(){
+                
+              }
             }
           });
           return changeStatus(STATUSES.SING);
@@ -77,6 +81,8 @@ function createPlayer(VIEWPORT_X, BASE_Y, callbacks){
       patternSpeed: 12
     },
     callbacks: {
+      getOx: function(s){ return s / 2; },
+      getOy: function(s){ return s; },
       onUpdate: function(){
         currentStatus.updateInput(player);
         currentStatus.update(player);

@@ -22,6 +22,8 @@ function createSpriteFactory(){
         var callbacks = options.callbacks || {};
         var character = {
           attrs: attrs,
+          getOx: callbacks.getOx,
+          getOy: callbacks.getOy,
           ifLoaded: function(callback){
             imageCacher.ifloaded(path, function(image){ callback(image); }, attrs.scale);
           },
@@ -88,7 +90,11 @@ function createCharacterFactory(spriteFactory){
               patternSpeed: 12
             }, 
             callbacks: {
-
+              getOx: function(s){ return s / 2; },
+              getOy: function(s){ return s; },
+              onUpdate: function(){
+                
+              }
             }
           });
         }
