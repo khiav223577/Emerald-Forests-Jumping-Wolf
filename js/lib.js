@@ -158,7 +158,8 @@ var sceneManager = new function(){
   return thisObj = {
     push: function(scene){
       scene.viewX = 0;
-      scene.characterFoctory = createCharacterFactory();
+      scene.spriteFactory = createSpriteFactory();
+      scene.characterFactory = createCharacterFactory(scene.spriteFactory);
       scenes.unshift(scene);
       scene.initialize();
     },
@@ -168,14 +169,14 @@ var sceneManager = new function(){
     },
     pop: function(){
       var scene = scenes.shift();
-      if (scene) scene.characterFoctory.destroy();
+      if (scene) scene.spriteFactory.destroy();
       return scene;
     },
     update: function(){
       var scene = scenes[0];
       if (scene){
         scene.update();
-        _.each(scene.characterFoctory.characters, function(character){
+        _.each(scene.spriteFactory.characters, function(character){
           character.update();
         });
       } 
@@ -185,15 +186,17 @@ var sceneManager = new function(){
       if (scene){
         scene.render(canvas);
         var ctx = canvas.getContext("2d");
-        _.each(scene.characterFoctory.characters, function(character){
+        _.each(scene.spriteFactory.characters, function(character){
           character.ifLoaded(function(image){
-            var x = character.attrs.x - scene.viewX;
-            var y = canvas.height - character.attrs.y - image.height;
-            var sx = character.getPattern() / character.maxPattern * image.width;
-            var sy = 0;
             var width = image.width / character.maxPattern;
             var height = image.height;
+            var x = character.attrs.x - scene.viewX + width / 2;
+            var y = canvas.height - character.attrs.y - height;
+            var sx = character.getPattern() / character.maxPattern * image.width;
+            var sy = 0;
             ctx.drawImage(image, sx, sy, width, height, x, y, width, height);
+            // var rge = (character.attrs.character || character.attrs.bullet).hitRange; //show hit range
+            // ctx.beginPath(); ctx.arc(x + width / 2,y + height / 2, rge, 0, 2 * Math.PI); ctx.stroke();
           });
         });
       }
@@ -202,63 +205,6 @@ var sceneManager = new function(){
       return scenes[0];
     }
   };
-}
-
-//-------------------------------------
-//  Character
-//-------------------------------------
-function createCharacterFactory(){
-  function getMaxPattern(path){ return MAX_PATTERNS[path] || 1; } 
-  var MAX_PATTERNS = {
-    "images/characters/wolf.png": 4,
-    "images/characters/enemy.png": 4,
-    "images/characters/monster-01.png": 1,
-    "images/characters/monster-02.png": 1,
-    "images/characters/monster-03.png": 1
-  };
-  return new function(){
-    var characters = {}, counter = 0;
-    return {
-      characters: characters,
-      create: function(path, attrs, preUpdateFunc){
-        var cid = (counter += 1);
-        var isDead = new FlagObject(false), isDestroyed = new FlagObject(false);
-        var pattern = 0, patternCounter = 0, patternAnimeSpeed = 12;
-        var character = {
-          attrs: attrs,
-          ifLoaded: function(callback){
-            imageCacher.ifloaded(path, function(image){ callback(image); }, attrs.scale);
-          },
-          getPattern: function(){ return pattern; },
-          maxPattern: getMaxPattern(path),
-          update: function(){
-            if (preUpdateFunc) preUpdateFunc();
-            patternCounter += patternAnimeSpeed;
-            if (patternCounter > 100){
-              patternCounter -= 100;
-              pattern = (pattern + 1) % character.maxPattern;
-            }
-          },
-          damage: function(damage){
-            attrs.hp -= damage;
-            if (attrs.hp < 0 && isDead.changeTo(true) == true){
-              //TODO 死亡動畫
-              character.destroy();
-            }
-          },
-          destroy: function(){
-            if (isDestroyed.changeTo(true) == false) return;
-            delete characters[cid];
-          }
-        };
-        return characters[cid] = character;
-      },
-      destroy: function(){
-        _.each(characters, function(character){ character.destroy(); });
-        characters = undefined;
-      }
-    }
-  }
 }
 function NumericSpring(xv, xt, zeta, omega){
   var f = 1.0 + 2.0 * zeta * omega;

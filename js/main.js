@@ -73,29 +73,7 @@ function MapScene(){
   var player, enemyRespawnController;
   return {
     initialize: function(){
-      player = (function(){
-        var vx = 0, vy = 0;
-        return sceneManager.getScene().characterFoctory.create('images/characters/wolf.png', {
-          x: VIEWPORT_X, 
-          y: BASE_Y,
-          hp: 100,
-          atk: 100
-        }, function(){
-          if (Input.pressed(Input.KEYS.RIGHT)) vx = 6;
-          else if (Input.pressed(Input.KEYS.LEFT)) vx = 3;
-          else vx = 4;
-          if (Input.pressed(Input.KEYS.UP) && player.attrs.y == BASE_Y) vy = 15;
-          if (player.attrs.y > BASE_Y){
-            vy -= 1; //gravity
-          }
-          player.attrs.x += vx;
-          player.attrs.y += vy;
-          if (player.attrs.y < BASE_Y){
-            player.attrs.y = BASE_Y;
-            vy = 0;
-          }
-        });
-      })();
+      player = createPlayer(VIEWPORT_X, BASE_Y);
       enemyRespawnController = createLevelController(BASE_Y);
     },
     update: function(deltaRatio){
