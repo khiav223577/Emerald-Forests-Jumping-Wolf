@@ -71,7 +71,9 @@ function createMonsterType01(x, BASE_Y, attr, onUpdate){
       },
       x: x, 
       y: BASE_Y, 
-      scale: 0.5
+      scale: 0.5,
+      loopPattern: true,
+      patternSpeed: 12
     }, function(){
       animator.update();
       if (onUpdate) onUpdate(character);

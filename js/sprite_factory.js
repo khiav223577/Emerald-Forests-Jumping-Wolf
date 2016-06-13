@@ -14,10 +14,10 @@ function createSpriteFactory(){
       eachCharacter: function(callback){
         _.each(characters, function(character){ if (character) callback(character); }); //character may be destroyed in this loop
       },
-      create: function(path, attrs, preUpdateFunc){ //attrs = {x: ?, y: ?, scale: ?}
+      create: function(path, attrs, preUpdateFunc){ //attrs = {x: ?, y: ?, scale: ?, patternSpeed: 12}
         var cid = (counter += 1);
         var isDestroyed = new FlagObject(false);
-        var pattern = 0, patternCounter = 0, patternAnimeSpeed = 12;
+        var pattern = 0, patternCounter = 0;
         var character = {
           attrs: attrs,
           ifLoaded: function(callback){
@@ -27,10 +27,14 @@ function createSpriteFactory(){
           maxPattern: getMaxPattern(path),
           update: function(){
             if (preUpdateFunc) preUpdateFunc();
-            patternCounter += patternAnimeSpeed;
+            patternCounter += attrs.patternSpeed;
             if (patternCounter > 100){
               patternCounter -= 100;
-              pattern = (pattern + 1) % character.maxPattern;
+              pattern += 1;
+              if (pattern >= character.maxPattern){
+                if (attrs.loopPattern) pattern = 0;
+                else character.destroy();
+              } 
             }
           },
           destroy: function(){

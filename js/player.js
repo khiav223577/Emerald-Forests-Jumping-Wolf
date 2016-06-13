@@ -12,8 +12,13 @@ function createPlayer(VIEWPORT_X, BASE_Y, callbacks){
       },
       updateInput: function(character){
         if (Input.pressed(Input.KEYS.SPACE)){ 
-          sceneManager.getScene().spriteFactory.create('images/characters/sing_effect.png', {x: player.attrs.x + 200, y: 100, scale: 1}, function(){
-
+          sceneManager.getScene().spriteFactory.create('images/characters/sing_effect.png', {
+            x: player.attrs.x + 200,
+            y: 100,
+            scale: 1,
+            loopPattern: false,
+            patternSpeed: 50
+          }, function(){
           });
           return changeStatus(STATUSES.SING);
         }
@@ -62,7 +67,9 @@ function createPlayer(VIEWPORT_X, BASE_Y, callbacks){
     onDestroy: callbacks.onDestroy,
     x: VIEWPORT_X, 
     y: BASE_Y,
-    scale: 0.5
+    scale: 0.5,
+    loopPattern: true,
+    patternSpeed: 12
   }, function(){
     currentStatus.updateInput(player);
     currentStatus.update(player);
