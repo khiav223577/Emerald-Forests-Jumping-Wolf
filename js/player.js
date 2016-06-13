@@ -1,7 +1,7 @@
 function createPPBar(x, y, min, max, val){
   if (val == undefined) val = min;
   var blood = sceneManager.getScene().spriteFactory.create('images/bar/blood.png', {
-    attrs: {x: 100, y: 100, scale: 1, patternSpeed: 12, fixedPosition: true },
+    attrs: {x: x + 6, y: y - 3, scale: 1, patternSpeed: 0, loopPattern: true, fixedPosition: true },
     callbacks: {
       getOx: function(s){ return 0; },
       getOy: function(s){ return 0; },
@@ -9,7 +9,7 @@ function createPPBar(x, y, min, max, val){
     }
   });
   var outlayer = sceneManager.getScene().spriteFactory.create('images/bar/outlayer.png', {
-    attrs: {x: 100, y: 100, scale: 1, patternSpeed: 12, fixedPosition: true },
+    attrs: {x: x, y: y, scale: 1, patternSpeed: 0, loopPattern: true, fixedPosition: true },
     callbacks: {
       getOx: function(s){ return 0; },
       getOy: function(s){ return 0; },
@@ -22,6 +22,7 @@ function createPPBar(x, y, min, max, val){
     },
     destroy: function(){
       blood.destroy();
+      outlayer.destroy();
     }
   }
 }
@@ -67,7 +68,7 @@ function createPlayer(VIEWPORT_X, BASE_Y, callbacks){
     var singCounter, ppbar;
     return {
       initialize: function(){
-        ppbar = createPPBar();
+        ppbar = createPPBar(100, 300, 0, 80);
         player.setPath(JUMP_PATH);
         singCounter = 30;
         var singEffect = sceneManager.getScene().spriteFactory.create('images/characters/sing_effect.png', {
