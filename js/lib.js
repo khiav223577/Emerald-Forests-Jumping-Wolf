@@ -158,8 +158,9 @@ var sceneManager = new function(){
   return thisObj = {
     push: function(scene){
       scene.viewX = 0;
-      scene.characterFactory = createCharacterFactory();
-      scene.bulletFactory = createBulletFactory(scene.characterFactory);
+      scene.spriteFactory = createSpriteFactory();
+      scene.characterFactory = createCharacterFactory(scene.spriteFactory);
+      scene.bulletFactory = createBulletFactory(scene.spriteFactory);
       scenes.unshift(scene);
       scene.initialize();
     },
@@ -169,14 +170,14 @@ var sceneManager = new function(){
     },
     pop: function(){
       var scene = scenes.shift();
-      if (scene) scene.characterFactory.destroy();
+      if (scene) scene.spriteFactory.destroy();
       return scene;
     },
     update: function(){
       var scene = scenes[0];
       if (scene){
         scene.update();
-        _.each(scene.characterFactory.characters, function(character){
+        _.each(scene.spriteFactory.characters, function(character){
           character.update();
         });
       } 
@@ -186,7 +187,7 @@ var sceneManager = new function(){
       if (scene){
         scene.render(canvas);
         var ctx = canvas.getContext("2d");
-        _.each(scene.characterFactory.characters, function(character){
+        _.each(scene.spriteFactory.characters, function(character){
           character.ifLoaded(function(image){
             var x = character.attrs.x - scene.viewX;
             var y = canvas.height - character.attrs.y - image.height;
@@ -208,7 +209,7 @@ var sceneManager = new function(){
 //-------------------------------------
 //  Character
 //-------------------------------------
-function createCharacterFactory(){
+function createSpriteFactory(){
   function getMaxPattern(path){ return MAX_PATTERNS[path] || 1; } 
   var MAX_PATTERNS = {
     "images/characters/wolf.png": 4,
@@ -221,9 +222,9 @@ function createCharacterFactory(){
     var characters = {}, counter = 0;
     return {
       characters: characters,
-      create: function(path, attrs, preUpdateFunc){ //attrs = {x: ?, y: ?, atk: ?, hp: ?}
+      create: function(path, attrs, preUpdateFunc){
         var cid = (counter += 1);
-        var isDead = new FlagObject(false), isDestroyed = new FlagObject(false);
+        var isDestroyed = new FlagObject(false);
         var pattern = 0, patternCounter = 0, patternAnimeSpeed = 12;
         var character = {
           attrs: attrs,
@@ -240,13 +241,6 @@ function createCharacterFactory(){
               pattern = (pattern + 1) % character.maxPattern;
             }
           },
-          damage: function(damage){
-            attrs.hp -= damage;
-            if (attrs.hp < 0 && isDead.changeTo(true) == true){
-              //TODO 死亡動畫
-              character.destroy();
-            }
-          },
           destroy: function(){
             if (isDestroyed.changeTo(true) == false) return;
             delete characters[cid];
@@ -261,20 +255,35 @@ function createCharacterFactory(){
     }
   }
 }
+function createCharacterFactory(spriteFactory){
+  var isDead = new FlagObject(false);
+  return {
+    create: function(path, attrs, preUpdateFunc){  //attrs = {x: ?, y: ?, atk: ?, hp: ?, scale: ?}
+      var character = spriteFactory.create(path, attrs, preUpdateFunc);
+      _.merge(character, {
+        damage: function(damage){
+          attrs.hp -= damage;
+          if (attrs.hp < 0 && isDead.changeTo(true) == true){
+            //TODO 死亡動畫
+            character.destroy();
+          }
+        },
+      });
+      return character;
+    }
+  };
+}
 //-------------------------------------
 //  Bullet
 //-------------------------------------
-function createBulletFactory(characterFactory){
+function createBulletFactory(spriteFactory){
   return {
     create: function(path, attrs){  //attrs = {x: ?, y: ?, atk: ?, hp: ?, speed: ?, existTime: ?}
-      var character = characterFactory.create(path, attrs, function(){ //attrs = {x: ?, y: ?, atk: ?, hp: ?}
+      var character = spriteFactory.create(path, attrs, function(){ //attrs = {x: ?, y: ?, atk: ?, hp: ?}
         if ((attrs.existTime -= 1) < 0) return character.destroy(); //TODO 子彈消失動畫
         character.attrs.x += attrs.speed;
       });
       return character;
-    },
-    destroy: function(){
-      characterFactory.destroy();
     }
   }
 }
