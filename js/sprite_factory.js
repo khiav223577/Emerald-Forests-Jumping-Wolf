@@ -1,13 +1,23 @@
-function createSpriteFactory(){
-  function getMaxPattern(path){ return MAX_PATTERNS[path] || 1; } 
+var assetsManager = new function(){
   var MAX_PATTERNS = {
     "images/characters/wolf.png": 2,
-    "images/characters/enemy.png": 4,
+    "images/characters/wolf_jump.png": 1,
+    "images/characters/wolf_stand.png": 1,
     "images/characters/monster-01.png": 1,
     "images/characters/monster-02.png": 1,
     "images/characters/monster-03.png": 1,
     "images/characters/sing_effect.png": 15
   };
+  var preloadFlag = new FlagObject(false);
+  return {
+    getMaxPattern: function(path){ return MAX_PATTERNS[path] || 1; },
+    preload: function(){
+      if (preloadFlag.changeTo(true) == false) return;
+      _.each(MAX_PATTERNS, function(_, path){ imageCacher.onload(path); }); //preload  
+    }
+  };
+};
+function createSpriteFactory(){
   return new function(){
     var characters = {}, counter = 0;
     return {
@@ -26,7 +36,7 @@ function createSpriteFactory(){
             path = _path;
             character.image = undefined;
             pattern = 0;
-            character.maxPattern = getMaxPattern(path);
+            character.maxPattern = assetsManager.getMaxPattern(path);
             imageCacher.onload(path, function(image){ character.image = image; }, attrs.scale);
           },
           getOx: function(){ return callbacks.getOx(character.image.width / character.maxPattern); },

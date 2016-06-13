@@ -15,6 +15,7 @@ function bindResize($canvas){
   resizeCanvas();
 }
 $(function(){
+  assetsManager.preload();
   var $canvas = $('#game_canvas');
   var canvas = $canvas[0];
   var ctx = canvas.getContext("2d");
