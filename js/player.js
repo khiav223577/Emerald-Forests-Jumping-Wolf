@@ -7,8 +7,6 @@ function createPlayer(VIEWPORT_X, BASE_Y, callbacks){
   }
   IDLE_PATH = 'images/characters/wolf.png';
   JUMP_PATH = 'images/characters/wolf_jump.png';
-  imageCacher.onload(IDLE_PATH);
-  imageCacher.onload(JUMP_PATH); //preload
   STATUSES.IDLE = new function(){
     var singCD = 0;
     return {

@@ -15,6 +15,7 @@ function bindResize($canvas){
   resizeCanvas();
 }
 $(function(){
+  assetsManager.preload();
   var $canvas = $('#game_canvas');
   var canvas = $canvas[0];
   var ctx = canvas.getContext("2d");
@@ -41,10 +42,25 @@ $(function(){
 //  MenuScene
 //-------------------------------------
 function MenuScene(){
-  var character;
+  var player, character;
   var cd = 0;
   return {
     initialize: function(){
+      player = sceneManager.getScene().characterFactory.create('images/characters/wolf_stand.png', {
+        attrs: {
+          character: { race: 1, hp: 1, atk: 0, hitRange: 30 },
+          x: 90, 
+          y: 80, 
+          scale: 0.5,
+          loopPattern: true,
+          patternSpeed: 12
+        },
+        callbacks: {
+          getOx: function(s){ return s / 2; },
+          getOy: function(s){ return s; },
+          onUpdate: function(){}
+        }
+      });
       character = createMonsterType01(650, 80, {path: 'images/characters/monster-02.png'})
     },
     update: function(deltaRatio){
@@ -55,13 +71,13 @@ function MenuScene(){
       if (cd > 0) return (cd -= 1);
       if (Math.rand(20) == 1){
         cd = 10;
-        var offX = -650;
+        var offX = 0;
         var offY = Math.randBetween(-60, 60);
-        character.attrs.x += offX;
-        character.attrs.y += offY
-        character.shoot('images/characters/magic_ball-0' + String(Math.rand(3) + 1) + '.png');
-        character.attrs.x -= offX;
-        character.attrs.y -= offY;
+        player.attrs.x += offX;
+        player.attrs.y += offY
+        player.shoot('images/characters/magic_ball-0' + String(Math.rand(3) + 1) + '.png');
+        player.attrs.x -= offX;
+        player.attrs.y -= offY;
       } 
     },
     render1: function(canvas){
