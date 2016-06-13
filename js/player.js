@@ -58,9 +58,9 @@ function createPlayer(VIEWPORT_X, BASE_Y, callbacks){
         vy = 6;
       },
       updateInput: function(character){
-        if (Input.pressed(Input.KEYS.A)){ character.shoot('images/characters/magic_ball-01.png'); changeStatus(STATUSES.IDLE); }
-        if (Input.pressed(Input.KEYS.S)){ character.shoot('images/characters/magic_ball-02.png'); changeStatus(STATUSES.IDLE); }
-        if (Input.pressed(Input.KEYS.D)){ character.shoot('images/characters/magic_ball-03.png'); changeStatus(STATUSES.IDLE); }
+        if (Input.pressed(Input.KEYS.A)){ character.shoot('images/characters/magic_ball-01.png', 'water' ); changeStatus(STATUSES.IDLE); }
+        if (Input.pressed(Input.KEYS.S)){ character.shoot('images/characters/magic_ball-02.png', 'fire'  ); changeStatus(STATUSES.IDLE); }
+        if (Input.pressed(Input.KEYS.D)){ character.shoot('images/characters/magic_ball-03.png', 'ground'); changeStatus(STATUSES.IDLE); }
       },
       update: function(character){
         if ((singCounter -= 1) < 0) return changeStatus(STATUSES.IDLE);
