@@ -195,7 +195,8 @@ var sceneManager = new function(){
           if (image == undefined) return;
           var width = image.width / character.maxPattern;
           var height = image.height;
-          var x = character.attrs.x - scene.viewX - character.getOx();
+          var x = character.attrs.x - character.getOx();
+          if (!character.attrs.fixedPosition) x -= scene.viewX;
           var y = canvas.height - character.attrs.y - character.getOy();
           var sx = character.getPattern() / character.maxPattern * image.width;
           var sy = 0;

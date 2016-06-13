@@ -1,7 +1,35 @@
+function createPPBar(x, y, min, max, val){
+  if (val == undefined) val = min;
+  var blood = sceneManager.getScene().spriteFactory.create('images/bar/blood.png', {
+    attrs: {x: 100, y: 100, scale: 1, patternSpeed: 12, fixedPosition: true },
+    callbacks: {
+      getOx: function(s){ return 0; },
+      getOy: function(s){ return 0; },
+      onUpdate: function(){}
+    }
+  });
+  var outlayer = sceneManager.getScene().spriteFactory.create('images/bar/outlayer.png', {
+    attrs: {x: 100, y: 100, scale: 1, patternSpeed: 12, fixedPosition: true },
+    callbacks: {
+      getOx: function(s){ return 0; },
+      getOy: function(s){ return 0; },
+      onUpdate: function(){}
+    }
+  });
+  return {
+    setValue: function(_val){
+      val = _val;
+    },
+    destroy: function(){
+      blood.destroy();
+    }
+  }
+}
 function createPlayer(VIEWPORT_X, BASE_Y, callbacks){
   var player, vx = 0, vy = 0;
   var currentStatus, STATUSES = {};
   function changeStatus(status){
+    if (currentStatus) currentStatus.onLeft();
     currentStatus = status;
     status.initialize();
   }
@@ -29,13 +57,17 @@ function createPlayer(VIEWPORT_X, BASE_Y, callbacks){
       },
       update: function(character){
         if (character.attrs.y > BASE_Y) vy -= 1; //gravity
+      },
+      onLeft: function(){
+
       }
     };
   };
   STATUSES.SING = new function(){
-    var singCounter;
+    var singCounter, ppbar;
     return {
       initialize: function(){
+        ppbar = createPPBar();
         player.setPath(JUMP_PATH);
         singCounter = 30;
         var singEffect = sceneManager.getScene().spriteFactory.create('images/characters/sing_effect.png', {
@@ -65,6 +97,10 @@ function createPlayer(VIEWPORT_X, BASE_Y, callbacks){
       update: function(character){
         if ((singCounter -= 1) < 0) return changeStatus(STATUSES.IDLE);
         vy *= 0.9;
+      },
+      onLeft: function(){
+        ppbar.destroy();
+        ppbar = undefined;
       }
     };
   };
