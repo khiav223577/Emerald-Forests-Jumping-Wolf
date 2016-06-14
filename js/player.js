@@ -64,9 +64,9 @@ function createPlayer(VIEWPORT_X, BASE_Y, callbacks){
           singCD = 15;
           return changeStatus(STATUSES.SING);
         }
-        if (Input.pressed(Input.KEYS.RIGHT)) vx = 5;
-        else if (Input.pressed(Input.KEYS.LEFT)) vx = 2;
-        else vx = 3;
+        if (Input.pressed(Input.KEYS.RIGHT)) vx = 4;
+        else if (Input.pressed(Input.KEYS.LEFT)) vx = 1;
+        else vx = 2;
         if (Input.pressed(Input.KEYS.UP) && character.attrs.y == BASE_Y){
           player.setPath(JUMP_PATH);
           vy = 15;
@@ -86,7 +86,7 @@ function createPlayer(VIEWPORT_X, BASE_Y, callbacks){
       initialize: function(){
         ppbar = createPPBar(50, 500, 30, 80);
         player.setPath(JUMP_PATH);
-        singCounter = 30;
+        singCounter = 40;
         var singEffect = sceneManager.getScene().spriteFactory.create('images/characters/sing_effect.png', {
           attrs: {
             x: 0,
@@ -107,7 +107,9 @@ function createPlayer(VIEWPORT_X, BASE_Y, callbacks){
         vy = 6;
       },
       updateInput: function(character){ 
-        ppbar.setValue(recorder.getAverage());
+        var s = recorder.getAverage() + 20;
+        console.log(s);
+        ppbar.setValue(s);
         if (Input.pressed(Input.KEYS.A)){ ppbar.setValue(45); }
         if (Input.pressed(Input.KEYS.S)){ ppbar.setValue(55); }
         if (Input.pressed(Input.KEYS.D)){ ppbar.setValue(65); }
