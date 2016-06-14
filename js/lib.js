@@ -341,7 +341,7 @@ function createRecorder(fftSize){
     microphone.connect(analyser);
     // analyser.connect(context.destination);
   }, function(){
-    console.log('error');
+    alert('error');
   });  
   return {
     isReady: function(){

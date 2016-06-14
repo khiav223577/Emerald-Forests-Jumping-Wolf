@@ -14,7 +14,7 @@ function bindResize($canvas){
   }
   resizeCanvas();
 }
-var recorder = createRecorder();
+var recorder = createRecorder(1024);
 $(function(){
   assetsManager.preload();
   var $canvas = $('#game_canvas');

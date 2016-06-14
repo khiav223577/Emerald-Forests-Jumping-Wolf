@@ -106,8 +106,8 @@ function createPlayer(VIEWPORT_X, BASE_Y, callbacks){
         });
         vy = 6;
       },
-      updateInput: function(character){
-        console.log(recorder.getAverage())
+      updateInput: function(character){ 
+        ppbar.setValue(recorder.getAverage());
         if (Input.pressed(Input.KEYS.A)){ ppbar.setValue(45); }
         if (Input.pressed(Input.KEYS.S)){ ppbar.setValue(55); }
         if (Input.pressed(Input.KEYS.D)){ ppbar.setValue(65); }
