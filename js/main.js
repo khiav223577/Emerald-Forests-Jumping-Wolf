@@ -14,6 +14,7 @@ function bindResize($canvas){
   }
   resizeCanvas();
 }
+var recorder = createRecorder(1024);
 $(function(){
   assetsManager.preload();
   var $canvas = $('#game_canvas');
@@ -67,7 +68,7 @@ function MenuScene(){
       character = createMonsterType01(650, BASE_Y, {path: 'images/characters/monster-02.png'})
     },
     update: function(deltaRatio){
-      if (Input.triggered(Input.KEYS.ENTER)){
+      if (Input.triggered(Input.KEYS.ENTER) && recorder.isReady()){
         //TODO sound && animation?
         sceneManager.goto(new MapScene());
       } 

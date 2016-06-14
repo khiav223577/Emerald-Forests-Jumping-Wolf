@@ -64,9 +64,9 @@ function createPlayer(VIEWPORT_X, BASE_Y, callbacks){
           singCD = 15;
           return changeStatus(STATUSES.SING);
         }
-        if (Input.pressed(Input.KEYS.RIGHT)) vx = 6;
-        else if (Input.pressed(Input.KEYS.LEFT)) vx = 3;
-        else vx = 4;
+        if (Input.pressed(Input.KEYS.RIGHT)) vx = 5;
+        else if (Input.pressed(Input.KEYS.LEFT)) vx = 2;
+        else vx = 3;
         if (Input.pressed(Input.KEYS.UP) && character.attrs.y == BASE_Y){
           player.setPath(JUMP_PATH);
           vy = 15;
@@ -106,7 +106,8 @@ function createPlayer(VIEWPORT_X, BASE_Y, callbacks){
         });
         vy = 6;
       },
-      updateInput: function(character){
+      updateInput: function(character){ 
+        ppbar.setValue(recorder.getAverage());
         if (Input.pressed(Input.KEYS.A)){ ppbar.setValue(45); }
         if (Input.pressed(Input.KEYS.S)){ ppbar.setValue(55); }
         if (Input.pressed(Input.KEYS.D)){ ppbar.setValue(65); }

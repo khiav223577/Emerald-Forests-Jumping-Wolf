@@ -31,7 +31,7 @@ function createLevelController(BASE_Y){
             });
             break;}
           }
-          levels.push({position: sx + 2000, emyAttrs: []}); //the break time when player change difficulty
+          levels.push({position: sx + 1200, emyAttrs: []}); //the break time when player change difficulty
         })();
       }
       var level = levels[0];
